@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session, sessionmaker, joinedload
-from sqlalchemy import create_engine
 from typing import Optional, List, TypeVar, Generic, Type
 from .models import Base, Company, Job
+from .config import create_db_engine
 from dotenv import load_dotenv
 import os
 
@@ -13,7 +13,7 @@ T = TypeVar('T', bound=Base)
 
 class BaseCRUD(Generic[T]):
     def __init__(self, model: Type[T]):
-        engine = create_engine(DATABASE_URL)
+        engine = create_db_engine()
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         self.model = model
 

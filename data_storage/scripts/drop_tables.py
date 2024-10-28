@@ -1,13 +1,8 @@
-import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
 from data_storage.models import Base
-
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+from data_storage.config import create_db_engine
 
 def drop_tables():
-    engine = create_engine(DATABASE_URL)
+    engine = create_db_engine()
     Base.metadata.drop_all(engine)
 
 if __name__ == "__main__":

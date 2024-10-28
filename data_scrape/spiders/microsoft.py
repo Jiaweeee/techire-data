@@ -8,6 +8,7 @@ class MicrosoftSpider(scrapy.Spider):
     name = "microsoft"
     custom_settings = {
         'DOWNLOAD_DELAY': 0.3,
+        'ROBOTSTXT_OBEY': False
     }
 
     def __init__(self, *args, **kwargs):

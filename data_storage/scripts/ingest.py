@@ -5,14 +5,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from data_storage.crud import CompanyCRUD
 from data_storage.models import Base
+from data_storage.config import create_db_engine
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def create_tables():
-    db_file_dir = "data_storage/db"
-    os.makedirs(db_file_dir, exist_ok=True)
-    engine = create_engine(DATABASE_URL)
+    engine = create_db_engine()
     Base.metadata.create_all(engine)
 
 def ingest_companies():

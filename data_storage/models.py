@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, DateTime, ForeignKey, Boolean
+from sqlalchemy import String, DateTime, ForeignKey, Boolean, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 from typing import Optional, Type, TypeVar, List
 from datetime import datetime, timezone
@@ -46,15 +46,15 @@ class Base(DeclarativeBase):
 class Job(Base):
     __tablename__ = 'jobs'
     
-    title: Mapped[str] = mapped_column(String)
-    url: Mapped[str] = mapped_column(String, unique=True)
-    full_description: Mapped[str] = mapped_column(String)
+    title: Mapped[str] = mapped_column(String(128), nullable=False)
+    url: Mapped[str] = mapped_column(String(512), unique=True)
+    full_description: Mapped[str] = mapped_column(Text, nullable=False)
     job_id: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
-    posted_date: Mapped[str] = mapped_column(String, nullable=True, default=None)
-    employment_type: Mapped[str] = mapped_column(String, nullable=True, default=None)
-    location: Mapped[str] = mapped_column(String, nullable=True, default=None)
-    skill_tags: Mapped[str] = mapped_column(String, nullable=True, default=None)
-    salary_range: Mapped[str] = mapped_column(String, nullable=True, default=None)
+    posted_date: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
+    employment_type: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
+    location: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
+    skill_tags: Mapped[str] = mapped_column(Text, nullable=True, default=None)
+    salary_range: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     expired: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     # Foreign key to company
@@ -67,13 +67,13 @@ class Company(Base):
     __tablename__ = 'companies'
     
     code: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, comment="The unique code of the company")
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    official_site_url: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    careers_page_url: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    icon_url: Mapped[str] = mapped_column(String, nullable=False)
-    introduction: Mapped[str] = mapped_column(String, nullable=False)
-    industry: Mapped[str] = mapped_column(String, nullable=True, default=None) # The industry where the company belongs to
-    headquarters: Mapped[str] = mapped_column(String, nullable=True, default=None)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    official_site_url: Mapped[str] = mapped_column(String(256), nullable=False, unique=True)
+    careers_page_url: Mapped[str] = mapped_column(String(256), nullable=False, unique=True)
+    icon_url: Mapped[str] = mapped_column(String(512), nullable=False)
+    introduction: Mapped[str] = mapped_column(Text, nullable=False)
+    industry: Mapped[str] = mapped_column(String(64), nullable=True, default=None) # The industry where the company belongs to
+    headquarters: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     
     # One-to-many relationship with jobs
     jobs: Mapped[List["Job"]] = relationship("Job", back_populates="company", cascade="all, delete-orphan")

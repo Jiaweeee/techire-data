@@ -1,7 +1,19 @@
+# Web Scraping
 Scrapy>=2.8.0
 scrapy-user-agents>=0.1.1
 itemadapter>=0.3.0
 Twisted>=22.10.0
-markdownify>=0.11.6
+
+# Database
 SQLAlchemy>=2.0.0
+mysqlclient>=2.2.0  # MySQL-python fork for Python 3
+PyMySQL>=1.1.0      # Pure Python MySQL client library
+
+# Text Processing
+markdownify>=0.11.6
+
+# Configuration
 python-dotenv>=1.0.0
+
+# Utilities
+setuptools>=68.0.0

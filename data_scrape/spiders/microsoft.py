@@ -24,7 +24,6 @@ class MicrosoftSpider(scrapy.Spider):
         total_jobs = data['operationResult']['result']['totalJobs']
         page_size = 20
         total_pages = total_jobs // page_size + (1 if total_jobs % page_size > 0 else 0)
-        total_pages = 1
         # 生成所有页面的请求
         for page in range(1, total_pages + 1):
             url = f"https://gcsservices.careers.microsoft.com/search/api/v1/search?pg={page}&pgSz={page_size}"
@@ -44,12 +43,14 @@ class MicrosoftSpider(scrapy.Spider):
         posted_date = job_detail.get('posted') and job_detail['posted'].get('external')
         unposted = job_detail.get('unposted', None)
         expired = unposted is not None
+        job_id = job_detail['jobId']
+        detail_page_url = f"https://jobs.careers.microsoft.com/global/en/job/{job_id}"
         
         yield JobItem(
             company_id=self.company.id,
             title=job_detail['title'],
-            url=response.url,
-            job_id=job_detail['jobId'],
+            url=detail_page_url,
+            job_id=job_id,
             full_description=self._parse_job_description(job_detail),
             posted_date=posted_date,
             employment_type=job_detail['employmentType'],

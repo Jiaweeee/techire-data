@@ -13,10 +13,10 @@ SPIDER_MODULES = ["data_scrape.spiders"]
 NEWSPIDER_MODULE = "data_scrape.spiders"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Download delay
-DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 0.3
 
 # Random User Agent
 DOWNLOADER_MIDDLEWARES = {
@@ -85,7 +85,6 @@ RETRY_HTTP_CODES = [403, 500, 502, 503, 504]
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # "data_scrape.pipelines.JobInfoExtractionPipeline": 100,
     "data_scrape.pipelines.JobInfoStoragePipeline": 200,
 }
 

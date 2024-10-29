@@ -1,3 +1,8 @@
+## Connect to MySQL local server
+```
+mysql -h 0.0.0.0 -u root -p
+```
+
 ## Add new companies to scrape
 
 1. Add new company info to `data_storage/data/companies.json`

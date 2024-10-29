@@ -38,6 +38,7 @@ class GoogleSpider(BasePagingJobSpider):
 
     def _parse_full_description(self, response):
         full_html = ""
+        # TODO: fix - some pages does not have all 3 divs
         for index in range(4, 7):
             html_text = response.xpath(f'//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[{index}]').get()
             full_html += html_text

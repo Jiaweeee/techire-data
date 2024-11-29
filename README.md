@@ -94,3 +94,19 @@ The service will be available at `http://localhost:8000`
 - Get job details: `GET /api/v1/jobs/detail`
 - List companies: `GET /api/v1/companies`
 - Get company details: `GET /api/v1/companies/detail`
+
+## Frontend Application
+
+### Setup and Run
+1. Install dependencies:
+```bash
+cd frontend
+npm install
+```
+
+2. Start the development server:
+```bash
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`

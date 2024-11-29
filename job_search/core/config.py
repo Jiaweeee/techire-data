@@ -6,7 +6,10 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Job Search API"
     
     # CORS Origins
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173"
+    ]
     
     # Database
     DATABASE_URL: str = get_database_url()

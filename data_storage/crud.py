@@ -3,6 +3,7 @@ from typing import Optional, List, TypeVar, Generic, Type
 from .models import Base, Company, Job
 from .config import create_db_engine
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 
 load_dotenv()
@@ -101,6 +102,7 @@ class JobCRUD(BaseCRUD[Job]):
                company_id: str,
                job_id: Optional[str] = None,
                posted_date: Optional[str] = None,
+               normalized_posted_date: Optional[datetime] = None,
                employment_type: Optional[str] = None,
                normalized_employment_type: Optional[str] = None,
                location: Optional[str] = None,
@@ -114,6 +116,7 @@ class JobCRUD(BaseCRUD[Job]):
             company_id=company_id,
             job_id=job_id,
             posted_date=posted_date,
+            normalized_posted_date=normalized_posted_date,
             employment_type=employment_type,
             normalized_employment_type=normalized_employment_type,
             location=location,

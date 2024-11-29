@@ -17,7 +17,7 @@ def ingest_companies():
     crud = CompanyCRUD()
     
     # 读取 JSON 文件
-    with open('data_storage/data/companies.json', 'r', encoding='utf-8') as f:
+    with open('data_storage/configs/companies.json', 'r', encoding='utf-8') as f:
         companies_data = json.load(f)
     
     for company_data in companies_data:

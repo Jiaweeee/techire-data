@@ -8,7 +8,7 @@
 from itemadapter import ItemAdapter
 from data_storage.crud import JobCRUD
 from data_scrape.items import JobItem
-from data_storage.lib.normalizer import JobDataNormalizer
+from data_storage.lib.normalizer import EmploymentTypeNormalizer, DateNormalizer
 
 class JobInfoExtractionPipeline:
     """
@@ -18,6 +18,21 @@ class JobInfoExtractionPipeline:
         # TODO
         pass
 
+class JobDataNormalizationPipeline:
+    """
+    Normalize job data before storing it in the database
+    """
+    def process_item(self, item: JobItem, spider):
+        # 标准化 employment_type
+        normalized_employment_type = EmploymentTypeNormalizer.normalize(item.employment_type)
+        item.normalized_employment_type = normalized_employment_type
+        
+        # 标准化 posted_date
+        normalized_posted_date = DateNormalizer.normalize(item.posted_date)
+        item.normalized_posted_date = normalized_posted_date
+        
+        return item  # 返回标准化后的 item
+
 class JobInfoStoragePipeline:
     """
     Store the job info in the database
@@ -26,7 +41,6 @@ class JobInfoStoragePipeline:
         self.job_crud = JobCRUD()
 
     def process_item(self, item: JobItem, spider):
-        normalized_employment_type = JobDataNormalizer.normalize_employment_type(item.employment_type)
         job = self.job_crud.get_by_url(item.url)
         # If job exists, update expired info
         if job:
@@ -40,8 +54,9 @@ class JobInfoStoragePipeline:
                 company_id=item.company_id,
                 job_id=item.job_id,
                 posted_date=item.posted_date,
+                normalized_posted_date=item.normalized_posted_date,
                 employment_type=item.employment_type,
-                normalized_employment_type=normalized_employment_type,
+                normalized_employment_type=item.normalized_employment_type,
                 location=', '.join(item.locations),
                 skill_tags=', '.join(item.skill_tags),
                 salary_range=item.salary_range,

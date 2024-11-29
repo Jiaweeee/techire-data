@@ -1,8 +1,10 @@
 import re
 from typing import Optional
 from ..models import EmploymentType
+from datetime import datetime
+from dateutil import parser
 
-class JobDataNormalizer:
+class EmploymentTypeNormalizer:
     # 工作类型映射字典
     EMPLOYMENT_TYPE_MAPPING = {
         # Full-time variations
@@ -22,7 +24,7 @@ class JobDataNormalizer:
     }
 
     @classmethod
-    def normalize_employment_type(cls, raw_type: str) -> Optional[EmploymentType]:
+    def normalize(cls, raw_type: str) -> Optional[EmploymentType]:
         if not raw_type:
             return None
             
@@ -30,4 +32,32 @@ class JobDataNormalizer:
         for pattern, normalized_type in cls.EMPLOYMENT_TYPE_MAPPING.items():
             if re.search(pattern, raw_type):
                 return normalized_type
+        return None
+
+class DateNormalizer:
+    @staticmethod
+    def normalize(raw_date: str) -> datetime:
+        if not raw_date:
+            return None
+        
+        try:
+            # 尝试解析日期
+            return parser.isoparse(raw_date)
+        except ValueError:
+            pass
+        
+        # 如果解析失败，尝试其他常见格式
+        formats = [
+            "%b %d",  # Mar 17
+            "%Y-%m-%dT%H:%M:%S",  # 2024-10-21T06:07:00
+            "%Y-%m-%d",  # 2024-10-21
+        ]
+        
+        for fmt in formats:
+            try:
+                return datetime.strptime(raw_date, fmt)
+            except ValueError:
+                continue
+        
+        # 如果所有格式都无法解析，返回 None
         return None

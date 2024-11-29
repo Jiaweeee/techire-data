@@ -62,6 +62,7 @@ class Job(Base):
     full_description: Mapped[str] = mapped_column(Text, nullable=False)
     job_id: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     posted_date: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
+    normalized_posted_date: Mapped[Optional[datetime]] = mapped_column(String(64), nullable=True, default=None)
     employment_type: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     normalized_employment_type: Mapped[EmploymentType] = mapped_column(
         String(32),

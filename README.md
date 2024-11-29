@@ -9,6 +9,19 @@ mysql -h 0.0.0.0 -u root -p
 2. Run `python data_storage/scripts/ingest.py` to insert company info into database
 3. Add new spider file to `data_scrape/spiders`, e.g. `microsoft.py`
 
+## Run spiders
+There are two ways to run the spiders:
+
+1. Run all spiders at once:
+```
+python run_spiders.py
+```
+
+2. Run a specific spider:
+```
+scrapy crawl <spider_name>
+```
+
 ## Migrate the database
 // TODO
 

@@ -3,6 +3,7 @@ from sqlalchemy import String, DateTime, ForeignKey, Boolean, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 from typing import Optional, Type, TypeVar, List
 from datetime import datetime, timezone
+from enum import Enum
 
 T = TypeVar("T", bound="Base")
 
@@ -42,6 +43,16 @@ class Base(DeclarativeBase):
         session.delete(self)
         session.commit()
 
+class EmploymentType(str, Enum):
+    FULL_TIME = "full_time"
+    PART_TIME = "part_time"
+    CONTRACT = "contract"
+    INTERNSHIP = "internship"
+    TEMPORARY = "temporary"
+    REMOTE = "remote"
+    HYBRID = "hybrid"
+    ON_SITE = "on_site"
+
 # define the Job model
 class Job(Base):
     __tablename__ = 'jobs'
@@ -52,6 +63,11 @@ class Job(Base):
     job_id: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     posted_date: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     employment_type: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
+    normalized_employment_type: Mapped[EmploymentType] = mapped_column(
+        String(32),
+        nullable=True,
+        default=None
+    )
     location: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     skill_tags: Mapped[str] = mapped_column(Text, nullable=True, default=None)
     salary_range: Mapped[str] = mapped_column(String(64), nullable=True, default=None)

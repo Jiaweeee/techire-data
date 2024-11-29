@@ -22,8 +22,19 @@ python run_spiders.py
 scrapy crawl <spider_name>
 ```
 
-## Migrate the database
-// TODO
+## Database Migrations
+
+After modifying database models in `data_storage/models.py`:
+
+1. Create and apply new migration:
+```
+python -m data_storage.scripts.migrate "描述你的改动"
+```
+
+2. If you just want to run existing migrations (e.g., when deploying to a new environment):
+```
+python -m data_storage.scripts.migrate
+```
 
 ## Troubleshooting
 Cannot find module named `data_storage`

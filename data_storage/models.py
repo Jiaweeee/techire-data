@@ -73,6 +73,7 @@ class Job(Base):
     skill_tags: Mapped[str] = mapped_column(Text, nullable=True, default=None)
     salary_range: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     expired: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_remote: Mapped[bool] = mapped_column(Boolean, nullable=True, default=None)
 
     # Foreign key to company
     company_id: Mapped[str] = mapped_column(String(64), ForeignKey("companies.id"), nullable=False)

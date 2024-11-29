@@ -8,12 +8,14 @@ Twisted>=22.10.0
 SQLAlchemy>=2.0.0
 mysqlclient>=2.2.0  # MySQL-python fork for Python 3
 PyMySQL>=1.1.0      # Pure Python MySQL client library
+alembic>=1.13.0
 
 # Text Processing
 markdownify>=0.11.6
+python-dateutil>=2.8.2
 
 # Configuration
 python-dotenv>=1.0.0
 
-# Utilities
+# Development
 setuptools>=68.0.0

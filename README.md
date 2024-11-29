@@ -49,3 +49,17 @@ Solution:
 ```
 pip install -e .
 ```
+
+## Environment Setup
+
+1. Copy the example environment file:
+```
+cp .env.example .env
+```
+
+2. Edit `.env` file with your actual configuration values:
+```
+DATABASE_URL=mysql://your_user:your_password@your_host:3306/your_database
+```
+
+Note: Never commit the `.env` file to version control as it may contain sensitive information.

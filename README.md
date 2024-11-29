@@ -63,3 +63,34 @@ DATABASE_URL=mysql://your_user:your_password@your_host:3306/your_database
 ```
 
 Note: Never commit the `.env` file to version control as it may contain sensitive information.
+
+## Job Search API Service
+
+### Setup and Run
+1. Install dependencies:
+```bash
+cd job_search
+pip install -e .
+pip install fastapi uvicorn
+```
+
+2. Start the API service:
+```bash
+# Development mode (with auto-reload)
+python -m job_search.main
+
+# Or production mode
+gunicorn job_search.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
+```
+
+The service will be available at `http://localhost:8000`
+
+### API Documentation
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+### Available Endpoints
+- Search jobs: `GET /api/v1/jobs/search`
+- Get job details: `GET /api/v1/jobs/detail`
+- List companies: `GET /api/v1/companies`
+- Get company details: `GET /api/v1/companies/detail`

@@ -70,7 +70,9 @@ function App() {
             Search through millions of jobs from top companies
           </p>
 
-          <SearchBar onSearch={handleSearch} />
+          <div className="flex justify-center">
+            <SearchBar onSearch={handleSearch} />
+          </div>
           <SearchFilters onFilterChange={handleFilterChange} />
 
           <div className="mt-8">

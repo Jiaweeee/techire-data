@@ -47,6 +47,27 @@ Once started, access the database viewer at `http://localhost:4983` in your brow
 
 ## 3. Project Components Setup
 
+### Quick Start Script
+Use the `start_local_dev.sh` script to start individual services. Open a separate terminal for each service you want to run:
+
+```bash
+# Start the Job Search API service
+./start_local_dev.sh api
+
+# Start the Frontend application
+./start_local_dev.sh frontend
+
+# Start the Database viewer
+./start_local_dev.sh db
+```
+
+Make the script executable if needed:
+```bash
+chmod +x start_local_dev.sh
+```
+
+Each command will start the respective service in the current terminal window with live logs output.
+
 ### Job Search API Service
 
 1. Install dependencies:

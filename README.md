@@ -1,15 +1,15 @@
-## Connect to MySQL local server
+## 1. Connect to MySQL local server
 ```
 mysql -h 0.0.0.0 -u root -p
 ```
 
-## Add new companies to scrape
+## 2. Add new companies to scrape
 
 1. Add new company info to `data_storage/data/companies.json`
 2. Run `python data_storage/scripts/ingest.py` to insert company info into database
 3. Add new spider file to `data_scrape/spiders`, e.g. `microsoft.py`
 
-## Run spiders
+## 3. Run spiders
 There are two ways to run the spiders:
 
 1. Run all spiders at once:
@@ -22,7 +22,7 @@ python run_spiders.py
 scrapy crawl <spider_name>
 ```
 
-## Database Migrations
+## 4. Database Migrations
 
 After modifying database models in `data_storage/models.py`:
 
@@ -36,7 +36,7 @@ python -m data_storage.scripts.migrate "描述你的改动"
 python -m data_storage.scripts.migrate
 ```
 
-## Troubleshooting
+## 5. Troubleshooting
 Cannot find module named `data_storage`
 ```
 Traceback (most recent call last):
@@ -50,7 +50,7 @@ Solution:
 pip install -e .
 ```
 
-## Environment Setup
+## 6. Environment Setup
 
 1. Copy the example environment file:
 ```
@@ -64,7 +64,7 @@ DATABASE_URL=mysql://your_user:your_password@your_host:3306/your_database
 
 Note: Never commit the `.env` file to version control as it may contain sensitive information.
 
-## Job Search API Service
+## 7. Job Search API Service
 
 ### Setup and Run
 1. Install dependencies:
@@ -95,7 +95,7 @@ The service will be available at `http://localhost:8000`
 - List companies: `GET /api/v1/companies`
 - Get company details: `GET /api/v1/companies/detail`
 
-## Frontend Application
+## 8. Frontend Application
 
 ### Setup and Run
 1. Install dependencies:
@@ -110,3 +110,30 @@ npm run dev
 ```
 
 The frontend will be available at `http://localhost:5173`
+
+## 9. Database Viewer
+
+Use Drizzle Studio to view and manage your database through a web interface:
+
+1. Navigate to db-viewer directory:
+```bash
+cd db-viewer
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env file with your DATABASE_URL
+```
+
+4. Start Drizzle Studio:
+```bash
+npm run db:studio
+```
+
+Once started, access the database viewer at `http://localhost:4983` in your browser.

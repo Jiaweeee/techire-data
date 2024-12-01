@@ -1,9 +1,9 @@
 import scrapy
-from markdownify import markdownify as md
 from data_scrape.items import JobItem
 from data_storage.crud import CompanyCRUD
 from abc import ABC, abstractmethod
 from typing import List
+from bs4 import BeautifulSoup
 
 class BasePagingJobSpider(scrapy.Spider, ABC):
     """
@@ -38,9 +38,20 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
     def parse_detail(self, response):
         job_data = self.extract_job_data(response)
         yield JobItem(**job_data)
-
-    def _html_to_markdown(self, html_text: str) -> str:
-        return md(html_text)
+    
+    def sanitize_html(self, html: str | None) -> str:
+        if not html:
+            return "<p>No information provided</p>"
+        
+        # 保留原始HTML结构，但清理不必要的属性和样式
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        # 移除所有样式属性和类名（因为这些可能与原网站样式相关）
+        for tag in soup.find_all(True):
+            tag.attrs = {key: value for key, value in tag.attrs.items() 
+                        if key not in ['class', 'style']}
+        
+        return str(soup)
 
     # Abstract methods that need to be implemented by subclasses
     @abstractmethod

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, Building2, MapPin, Globe, ExternalLink } from 'lucide-react';
 import { getJobDetail } from '../services/api';
 import type { JobDetail } from '../types/api';
@@ -117,8 +116,13 @@ export function JobDetailPage() {
           )}
         </div>
 
-        <div className="prose max-w-none">
-          <ReactMarkdown>{job.full_description}</ReactMarkdown>
+        <div className="prose prose-gray max-w-none">
+          <div 
+            dangerouslySetInnerHTML={{
+                __html: job.full_description
+            }}
+            className="job-section"
+          />
         </div>
 
         {job.skill_tags && (

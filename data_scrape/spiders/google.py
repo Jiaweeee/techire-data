@@ -42,4 +42,4 @@ class GoogleSpider(BasePagingJobSpider):
         for index in range(4, 7):
             html_text = response.xpath(f'//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[{index}]').get()
             full_html += html_text
-        return self._html_to_markdown(full_html)
+        return self.sanitize_html(full_html)

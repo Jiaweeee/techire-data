@@ -46,10 +46,20 @@ class MicrosoftSpider(BasePagingJobSpider):
         }
 
     def _parse_job_description(self, job_detail: dict) -> str:
-        description_md = '## Overview\n' + self._html_to_markdown(job_detail['description'] or 'Empty')
-        qualifications_md = '## Qualifications\n' + self._html_to_markdown(job_detail['qualifications'] or 'Empty')
-        responsibilities_md = '## Responsibilities\n' + self._html_to_markdown(job_detail['responsibilities'] or 'Empty')
-        return description_md + '\n' + qualifications_md + '\n' + responsibilities_md
+        sections = [
+            ('Overview', self.sanitize_html(job_detail.get('description'))),
+            ('Qualifications', self.sanitize_html(job_detail.get('qualifications'))),
+            ('Responsibilities', self.sanitize_html(job_detail.get('responsibilities')))
+        ]
+        
+        # 使用HTML结构组织内容
+        return '\n'.join(
+            f'<section class="job-section">'
+            f'<h2>{title}</h2>'
+            f'{content}'
+            f'</section>'
+            for title, content in sections
+        )
 
     def _parse_job_locations(self, job_detail: dict) -> List[str]:
         location_obj = job_detail['primaryWorkLocation']

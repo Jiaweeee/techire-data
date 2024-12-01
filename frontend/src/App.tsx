@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Logo } from './components/Logo';
 import { SearchBar } from './components/SearchBar';
@@ -40,18 +40,22 @@ function App() {
   const handleFilterChange = (filters: Partial<SearchParams>) => {
     const newParams = { ...searchParams, ...filters };
     setSearchParams(newParams);
-    if (searchParams.q) {
-      handleSearch(searchParams.q);
-    }
   };
 
   const handlePageChange = (page: number) => {
-    const newParams = { ...searchParams, page };
-    setSearchParams(newParams);
+    setSearchParams(prev => ({ ...prev, page }));
+  };
+
+  const handleQueryChange = (query: string) => {
+    setCurrentQuery(query);
+    setSearchParams(prev => ({ ...prev, q: query, page: 1 }));
+  };
+
+  useEffect(() => {
     if (currentQuery) {
       handleSearch(currentQuery);
     }
-  };
+  }, [searchParams, currentQuery]);
 
   const totalPages = Math.ceil(total / (searchParams.per_page || 10));
 
@@ -76,7 +80,7 @@ function App() {
                 </p>
 
                 <div className="flex justify-center">
-                  <SearchBar onSearch={handleSearch} />
+                  <SearchBar onSearch={handleQueryChange} />
                 </div>
                 <SearchFilters onFilterChange={handleFilterChange} />
 

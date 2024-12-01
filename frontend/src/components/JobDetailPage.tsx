@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building2, MapPin, Globe, ExternalLink } from 'lucide-react';
 import { getJobDetail } from '../services/api';
 import type { JobDetail } from '../types/api';
+import { getEmploymentTypeLabel } from '../types/employment';
 
 export function JobDetailPage() {
   const { jobId } = useParams();
@@ -111,12 +112,12 @@ export function JobDetailPage() {
           {job.employment_type && (
             <div className="bg-gray-100 px-4 py-2 rounded-lg">
               <span className="text-gray-600">Employment Type</span>
-              <p className="font-medium">{job.employment_type}</p>
+              <p className="font-medium">{getEmploymentTypeLabel(job.employment_type)}</p>
             </div>
           )}
         </div>
 
-        <div className="prose prose-gray max-w-none">
+        <div className="prose-gray max-w-none">
           <div 
             dangerouslySetInnerHTML={{
                 __html: job.full_description

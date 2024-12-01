@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, sessionmaker, joinedload
 from typing import Optional, List, TypeVar, Generic, Type
-from .models import Base, Company, Job
+from .models import Base, Company, Job, EmploymentType
 from .config import create_db_engine
 from dotenv import load_dotenv
 from datetime import datetime
@@ -103,8 +103,7 @@ class JobCRUD(BaseCRUD[Job]):
                job_id: Optional[str] = None,
                posted_date: Optional[str] = None,
                normalized_posted_date: Optional[datetime] = None,
-               employment_type: Optional[str] = None,
-               normalized_employment_type: Optional[str] = None,
+               employment_type: Optional[EmploymentType] = None,
                location: Optional[str] = None,
                skill_tags: Optional[str] = None,
                salary_range: Optional[str] = None,
@@ -117,8 +116,7 @@ class JobCRUD(BaseCRUD[Job]):
             job_id=job_id,
             posted_date=posted_date,
             normalized_posted_date=normalized_posted_date,
-            employment_type=employment_type,
-            normalized_employment_type=normalized_employment_type,
+            employment_type=employment_type.value if employment_type else None,
             location=location,
             skill_tags=skill_tags,
             salary_range=salary_range,

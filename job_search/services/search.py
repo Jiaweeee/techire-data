@@ -20,7 +20,6 @@ class JobSearchService:
             },
             "location": job.location,
             "employment_type": job.employment_type,
-            "normalized_employment_type": job.normalized_employment_type,
             "posted_date": job.normalized_posted_date,
             "salary_range": job.salary_range,
             "is_remote": job.is_remote,
@@ -31,7 +30,7 @@ class JobSearchService:
         self,
         query: Optional[str] = None,
         company_ids: Optional[List[str]] = None,
-        employment_types: Optional[List[str]] = None,
+        employment_types: Optional[List[str]] = None,  # 修改参数名
         posted_after: Optional[datetime] = None,
         is_remote: Optional[bool] = None,
         page: int = 1,
@@ -54,9 +53,9 @@ class JobSearchService:
         if company_ids:
             query_filters.append(Job.company_id.in_(company_ids))
             
-        if employment_types:
+        if employment_types:  # 修改这里
             query_filters.append(
-                Job.normalized_employment_type.in_(employment_types)
+                Job.employment_type.in_(employment_types)
             )
             
         if posted_after:
@@ -91,4 +90,4 @@ class JobSearchService:
             "page": page,
             "per_page": per_page,
             "results": job_briefs
-        } 
+        }

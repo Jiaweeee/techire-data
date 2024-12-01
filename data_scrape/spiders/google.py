@@ -32,7 +32,7 @@ class GoogleSpider(BasePagingJobSpider):
             'title': response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[1]/h2/text()').get(),
             'url': response.url,
             'full_description': self._parse_full_description(response),
-            'employment_type': "Full-time",  # All google jobs are full-time
+            'raw_employment_type': "Full-time",  # All google jobs are full-time
             'locations': [response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[2]/span[2]/span/text()').get()]
         }
 

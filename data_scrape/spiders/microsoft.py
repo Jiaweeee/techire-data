@@ -40,7 +40,7 @@ class MicrosoftSpider(BasePagingJobSpider):
             'job_id': job_id,
             'full_description': self._parse_job_description(job_detail),
             'posted_date': posted_date,
-            'employment_type': job_detail['employmentType'],
+            'raw_employment_type': job_detail['employmentType'],
             'locations': self._parse_job_locations(job_detail),
             'expired': unposted is not None
         }

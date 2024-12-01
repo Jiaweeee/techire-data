@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-
+from data_storage.models import EmploymentType
 class CompanyBrief(BaseModel):
     id: str
     name: str
@@ -26,8 +26,7 @@ class JobBrief(BaseModel):
     title: str
     company: CompanyBrief
     location: str
-    employment_type: Optional[str]
-    normalized_employment_type: Optional[str]
+    employment_type: Optional[EmploymentType]
     posted_date: Optional[datetime]
     salary_range: Optional[str]
     is_remote: Optional[bool]

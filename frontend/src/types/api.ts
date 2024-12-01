@@ -1,4 +1,6 @@
 // API Response Types
+import { EmploymentType } from "./employment";
+
 export interface ValidationError {
   loc: (string | number)[];
   msg: string;
@@ -30,8 +32,7 @@ export interface JobDetail {
   title: string;
   company: CompanyBrief;
   location: string;
-  employment_type: string | null;
-  normalized_employment_type: string | null;
+  employment_type: EmploymentType | null;
   posted_date: string | null;
   salary_range: string | null;
   is_remote: boolean | null;

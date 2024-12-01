@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { JobDetail } from '../types/api';
 import { MapPin, Building2, Clock, Globe } from 'lucide-react';
+import { getEmploymentTypeLabel } from '../types/employment';
 
 interface JobCardProps {
   job: JobDetail;
@@ -47,7 +48,7 @@ export function JobCard({ job }: JobCardProps) {
               </span>
               {job.employment_type && (
                 <span className="text-gray-500 text-sm">
-                  {job.employment_type}
+                  {getEmploymentTypeLabel(job.employment_type)}
                 </span>
               )}
             </div>

@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, DateTime, ForeignKey, Boolean, Text
+from sqlalchemy import String, DateTime, ForeignKey, Boolean, Text, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 from typing import Optional, Type, TypeVar, List
 from datetime import datetime, timezone
@@ -43,15 +43,15 @@ class Base(DeclarativeBase):
         session.delete(self)
         session.commit()
 
-class EmploymentType(str, Enum):
-    FULL_TIME = "full_time"
-    PART_TIME = "part_time"
-    CONTRACT = "contract"
-    INTERNSHIP = "internship"
-    TEMPORARY = "temporary"
-    REMOTE = "remote"
-    HYBRID = "hybrid"
-    ON_SITE = "on_site"
+class EmploymentType(int, Enum):
+    FULL_TIME = 1
+    PART_TIME = 2
+    CONTRACT = 3
+    INTERNSHIP = 4
+    TEMPORARY = 5
+    REMOTE = 6
+    HYBRID = 7
+    ON_SITE = 8
 
 # define the Job model
 class Job(Base):
@@ -63,9 +63,8 @@ class Job(Base):
     job_id: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     posted_date: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     normalized_posted_date: Mapped[Optional[datetime]] = mapped_column(String(64), nullable=True, default=None)
-    employment_type: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
-    normalized_employment_type: Mapped[EmploymentType] = mapped_column(
-        String(32),
+    employment_type: Mapped[EmploymentType] = mapped_column(
+        Integer,
         nullable=True,
         default=None
     )

@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from data_storage.models import Job, Company
 from datetime import datetime
 from typing import List, Optional
-from ..schemas.job import JobBrief
 
 class JobSearchService:
     def __init__(self, db: Session):
@@ -24,7 +23,8 @@ class JobSearchService:
             "normalized_employment_type": job.normalized_employment_type,
             "posted_date": job.normalized_posted_date,
             "salary_range": job.salary_range,
-            "is_remote": job.is_remote
+            "is_remote": job.is_remote,
+            "url": job.url
         }
 
     def search_jobs(

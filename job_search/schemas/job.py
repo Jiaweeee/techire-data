@@ -36,6 +36,7 @@ class JobBrief(BaseModel):
         from_attributes = True
 
 class JobDetail(JobBrief):
+    url: str
     full_description: str
     skill_tags: Optional[str]
     

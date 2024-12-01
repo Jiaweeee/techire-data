@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { JobDetail } from '../types/api';
 import { MapPin, Building2, Clock, Globe } from 'lucide-react';
 
@@ -6,6 +7,7 @@ interface JobCardProps {
 }
 
 export function JobCard({ job }: JobCardProps) {
+  const navigate = useNavigate();
   const postedDate = job.posted_date ? new Date(job.posted_date) : null;
   const timeAgo = postedDate
     ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
@@ -15,7 +17,10 @@ export function JobCard({ job }: JobCardProps) {
     : 'Recently';
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+    <div
+      className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => navigate(`/jobs/${job.id}`)}
+    >
       <div className="flex justify-between items-start mb-4">
         <div className="flex gap-4">
         {job.company.icon_url ? (

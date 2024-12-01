@@ -26,6 +26,7 @@ export interface CompanyDetail extends CompanyBrief {
 
 export interface JobDetail {
   id: string;
+  url: string;
   title: string;
   company: CompanyBrief;
   location: string;

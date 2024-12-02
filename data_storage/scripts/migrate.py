@@ -1,4 +1,3 @@
-import os
 import sys
 from alembic import command
 from alembic.config import Config
@@ -20,14 +19,15 @@ def run_migrations(message: str = None):
         alembic_cfg.set_main_option("sqlalchemy.url", get_database_url())
         
         if message:
-            # 生成新的迁移脚本
+            # 只生成新的迁移脚本
             print(f"Generating new migration: {message}")
             command.revision(alembic_cfg, autogenerate=True, message=message)
+            print("Migration file generated successfully!")
+            return
             
-        # 运行迁移
+        # 只有在没有 message 参数时才运行迁移
         print("Applying migrations...")
         command.upgrade(alembic_cfg, "head")
-        
         print("Migration completed successfully!")
         
     except Exception as e:

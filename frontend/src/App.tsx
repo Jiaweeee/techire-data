@@ -55,6 +55,7 @@ function App() {
     if (currentQuery) {
       handleSearch(currentQuery);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, currentQuery]);
 
   const totalPages = Math.ceil(total / (searchParams.per_page || 10));

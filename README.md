@@ -138,12 +138,12 @@ scrapy crawl <spider_name>
 ### Database Migrations
 After modifying database models in `data_storage/models.py`:
 
-1. Create and apply new migration:
+1. Generate a new migration:
 ```
 python -m data_storage.scripts.migrate "描述你的改动"
 ```
 
-2. If you just want to run existing migrations (e.g., when deploying to a new environment):
+2. Apply existing migrations (e.g., when deploying to a new environment):
 ```
 python -m data_storage.scripts.migrate
 ```

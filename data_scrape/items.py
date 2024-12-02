@@ -14,8 +14,7 @@ class JobItem:
     url: str
     full_description: str
     job_id: Optional[str] = None
-    posted_date: Optional[str] = None
-    normalized_posted_date: Optional[datetime] = None
+    raw_posted_date: Optional[str] = None
     raw_employment_type: Optional[str] = None
     locations: List[str] = field(default_factory=list)
     skill_tags: List[str] = field(default_factory=list)

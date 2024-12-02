@@ -18,17 +18,6 @@ class JobInfoExtractionPipeline:
         # TODO
         pass
 
-# TODO: move this logic to the storage pipeline
-class JobDataNormalizationPipeline:
-    """
-    Normalize job data before storing it in the database
-    """
-    def process_item(self, item: JobItem, spider):
-        # Normalize posted_date
-        normalized_posted_date = DateNormalizer.normalize(item.posted_date)
-        item.normalized_posted_date = normalized_posted_date
-        
-        return item
 
 class JobInfoStoragePipeline:
     """
@@ -40,6 +29,9 @@ class JobInfoStoragePipeline:
     def process_item(self, item: JobItem, spider):
         # Normalization
         employment_type = EmploymentTypeNormalizer.normalize(item.raw_employment_type)
+        posted_date = DateNormalizer.normalize(item.raw_posted_date)
+
+        # Store job info
         job = self.job_crud.get_by_url(item.url)
         # If job exists, update expired info
         if job:
@@ -52,8 +44,7 @@ class JobInfoStoragePipeline:
                 full_description=item.full_description,
                 company_id=item.company_id,
                 job_id=item.job_id,
-                posted_date=item.posted_date,
-                normalized_posted_date=item.normalized_posted_date,
+                posted_date=posted_date,
                 employment_type=employment_type,
                 location=', '.join(item.locations),
                 skill_tags=', '.join(item.skill_tags),

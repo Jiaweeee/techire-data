@@ -36,8 +36,8 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
             yield scrapy.Request(url=url, callback=self.parse_detail)
 
     def parse_detail(self, response):
-        job_data = self.extract_job_data(response)
-        yield JobItem(**job_data)
+        job_item = self.extract_job_data(response)
+        yield job_item
     
     def sanitize_html(self, html: str | None) -> str:
         if not html:
@@ -80,7 +80,7 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
         pass
 
     @abstractmethod
-    def extract_job_data(self, response) -> dict:
+    def extract_job_data(self, response) -> JobItem:
         """Extract job details from detail page"""
         pass
 

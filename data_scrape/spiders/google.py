@@ -1,5 +1,6 @@
 from data_scrape.spiders.base import BasePagingJobSpider
 from typing import List
+from data_scrape.items import JobItem
 
 class GoogleSpider(BasePagingJobSpider):
     name = "google"
@@ -26,15 +27,15 @@ class GoogleSpider(BasePagingJobSpider):
             urls.append(url)
         return urls
 
-    def extract_job_data(self, response) -> dict:
-        return {
-            'company_id': self.company.id,
-            'title': response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[1]/h2/text()').get(),
-            'url': response.url,
-            'full_description': self._parse_full_description(response),
-            'raw_employment_type': "Full-time",  # All google jobs are full-time
-            'locations': [response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[2]/span[2]/span/text()').get()]
-        }
+    def extract_job_data(self, response) -> JobItem:
+        return JobItem(
+            company_id=self.company.id,
+            title=response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[1]/h2/text()').get(),
+            url=response.url,
+            full_description=self._parse_full_description(response),
+            raw_employment_type="Full-time",  # All google jobs are full-time
+            locations=[response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[2]/span[2]/span/text()').get()]
+        )
 
     def _parse_full_description(self, response):
         full_html = ""

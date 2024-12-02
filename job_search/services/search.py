@@ -20,7 +20,7 @@ class JobSearchService:
             },
             "location": job.location,
             "employment_type": job.employment_type,
-            "posted_date": job.normalized_posted_date,
+            "posted_date": job.posted_date,
             "salary_range": job.salary_range,
             "is_remote": job.is_remote,
             "url": job.url
@@ -60,7 +60,7 @@ class JobSearchService:
             
         if posted_after:
             query_filters.append(
-                Job.normalized_posted_date >= posted_after
+                Job.posted_date >= posted_after
             )
             
         if is_remote is not None:
@@ -74,7 +74,7 @@ class JobSearchService:
             base_query = base_query.filter(and_(*query_filters))
             
         # Order by posted date
-        base_query = base_query.order_by(Job.normalized_posted_date.desc())
+        base_query = base_query.order_by(Job.posted_date.desc())
         
         # Get total count
         total = base_query.count()

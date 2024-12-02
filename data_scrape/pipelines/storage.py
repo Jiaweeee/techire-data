@@ -1,22 +1,6 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
-from data_storage.crud import JobCRUD
+from data_storage.crud import JobCRUD, JobAnalysisCRUD
 from data_scrape.items import JobItem
 from data_storage.lib.normalizer import EmploymentTypeNormalizer, DateNormalizer
-
-class JobInfoExtractionPipeline:
-    """
-    Extract useful information from the job description using AI
-    """
-    def process_item(self, item: JobItem, spider):
-        # TODO
-        pass
 
 
 class JobInfoStoragePipeline:
@@ -25,6 +9,7 @@ class JobInfoStoragePipeline:
     """
     def __init__(self):
         self.job_crud = JobCRUD()
+        self.job_analysis_crud = JobAnalysisCRUD()
 
     def process_item(self, item: JobItem, spider):
         # Normalization
@@ -38,7 +23,7 @@ class JobInfoStoragePipeline:
             if job.expired != item.expired:
                 self.job_crud.update(job.id, expired=item.expired)
         else:
-            self.job_crud.create(
+            job = self.job_crud.create(
                 title=item.title,
                 url=item.url,
                 full_description=item.full_description,
@@ -47,9 +32,12 @@ class JobInfoStoragePipeline:
                 posted_date=posted_date,
                 employment_type=employment_type,
                 location=', '.join(item.locations),
-                skill_tags=', '.join(item.skill_tags),
-                salary_range=item.salary_range,
                 expired=item.expired
+            )
+            # 创建初始状态为 pending 的 JobAnalysis 记录
+            self.job_analysis_crud.create(
+                job_id=job.id,
+                status='pending'
             )
         
 

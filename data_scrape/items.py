@@ -17,6 +17,4 @@ class JobItem:
     raw_posted_date: Optional[str] = None
     raw_employment_type: Optional[str] = None
     locations: List[str] = field(default_factory=list)
-    skill_tags: List[str] = field(default_factory=list)
-    salary_range: Optional[str] = None
     expired: bool = False

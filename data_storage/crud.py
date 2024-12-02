@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, sessionmaker, joinedload
 from typing import Optional, List, TypeVar, Generic, Type
-from .models import Base, Company, Job, EmploymentType
+from .models import Base, Company, Job, EmploymentType, JobAnalysis, ExperienceLevel
 from .config import create_db_engine
 from dotenv import load_dotenv
 from datetime import datetime
@@ -104,8 +104,6 @@ class JobCRUD(BaseCRUD[Job]):
                posted_date: Optional[datetime] = None,
                employment_type: Optional[EmploymentType] = None,
                location: Optional[str] = None,
-               skill_tags: Optional[str] = None,
-               salary_range: Optional[str] = None,
                expired: bool = False) -> Job:
         return super().create(
             title=title,
@@ -116,8 +114,32 @@ class JobCRUD(BaseCRUD[Job]):
             posted_date=posted_date,
             employment_type=employment_type.value if employment_type else None,
             location=location,
-            skill_tags=skill_tags,
-            salary_range=salary_range,
             expired=expired
+        )
+
+class JobAnalysisCRUD(BaseCRUD[JobAnalysis]):
+    def __init__(self):
+        super().__init__(JobAnalysis)
+    
+    def create(self,
+               job_id: str,
+               status: str,
+               salary_min: Optional[float] = None,
+               salary_max: Optional[float] = None,
+               salary_fixed: Optional[float] = None,
+               salary_currency: Optional[str] = None,
+               skill_tags: Optional[List[str]] = None,
+               experience_level: Optional[ExperienceLevel] = None,
+               summary: Optional[str] = None) -> JobAnalysis:
+        return super().create(
+            job_id=job_id,
+            status=status,
+            salary_min=salary_min,
+            salary_max=salary_max,
+            salary_fixed=salary_fixed,
+            salary_currency=salary_currency,
+            skill_tags=skill_tags,
+            experience_level=experience_level.value if experience_level else None,
+            summary=summary
         )
 

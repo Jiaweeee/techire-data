@@ -113,6 +113,32 @@ npm run dev
 
 The frontend will be available at `http://localhost:5173`
 
+### Job Analysis Service
+This service analyzes job postings using LLM to extract structured information like salary range, required skills, and experience level.
+
+1. Set up environment variables:
+```bash
+# In .env file
+OPENAI_API_KEY=your_api_key
+OPENAI_BASE_URL=https://api.openai.com/v1  # or your custom endpoint
+CHAT_MODEL=gpt-3.5-turbo  # or other supported models
+```
+
+2. Start the analysis service:
+```bash
+# Development mode
+python -m job_analysis.main
+```
+
+The service will:
+- Monitor the database for new or failed job analyses
+- Process jobs in batches
+- Update analysis results in real-time
+
+To gracefully stop the service, press Ctrl+C. The service will:
+- Mark any in-progress analysis as failed
+- Clean up resources before shutting down
+
 ## 4. Data Collection
 
 ### Add new companies to scrape

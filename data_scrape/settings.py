@@ -85,7 +85,7 @@ RETRY_HTTP_CODES = [403, 500, 502, 503, 504]
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "data_scrape.pipelines.JobInfoStoragePipeline": 200,
+    "data_scrape.pipelines.JobInfoStoragePipeline": 100,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

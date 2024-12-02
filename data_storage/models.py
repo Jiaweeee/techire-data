@@ -1,9 +1,9 @@
 import uuid
-from sqlalchemy import String, DateTime, ForeignKey, Boolean, Text, Integer
+from sqlalchemy import String, DateTime, ForeignKey, Boolean, Text, Integer, Float, ARRAY
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 from typing import Optional, Type, TypeVar, List
 from datetime import datetime, timezone
-from enum import Enum
+from enum import Enum, IntEnum
 
 T = TypeVar("T", bound="Base")
 
@@ -53,6 +53,13 @@ class EmploymentType(int, Enum):
     HYBRID = 7
     ON_SITE = 8
 
+class ExperienceLevel(IntEnum):
+    ENTRY = 1
+    MID = 2
+    SENIOR = 3
+    LEAD = 4
+    EXECUTIVE = 5
+
 # define the Job model
 class Job(Base):
     __tablename__ = 'jobs'
@@ -68,8 +75,6 @@ class Job(Base):
         default=None
     )
     location: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
-    skill_tags: Mapped[str] = mapped_column(Text, nullable=True, default=None)
-    salary_range: Mapped[str] = mapped_column(String(64), nullable=True, default=None)
     expired: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_remote: Mapped[bool] = mapped_column(Boolean, nullable=True, default=None)
 
@@ -77,6 +82,9 @@ class Job(Base):
     company_id: Mapped[str] = mapped_column(String(64), ForeignKey("companies.id"), nullable=False)
     # Relationship to company
     company: Mapped["Company"] = relationship("Company", back_populates="jobs")
+
+    # Add this to existing Job model
+    analysis: Mapped["JobAnalysis"] = relationship("JobAnalysis", back_populates="job", uselist=False)
 
 # define the Company model
 class Company(Base):
@@ -93,3 +101,27 @@ class Company(Base):
     
     # One-to-many relationship with jobs
     jobs: Mapped[List["Job"]] = relationship("Job", back_populates="company", cascade="all, delete-orphan")
+
+class JobAnalysis(Base):
+    __tablename__ = 'job_analyses'
+    
+    job_id: Mapped[str] = mapped_column(String(64), ForeignKey("jobs.id"), unique=True, nullable=False)
+    job: Mapped["Job"] = relationship("Job", back_populates="analysis")
+    
+    status: Mapped[str] = mapped_column(
+        String(32), 
+        nullable=False, 
+        default='pending', # pending, processing, completed, failed
+        index=True
+    )
+    
+    # Salary information
+    salary_min: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    salary_max: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    salary_fixed: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    salary_currency: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
+    
+    # Other extracted information
+    skill_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    experience_level: Mapped[Optional[ExperienceLevel]] = mapped_column(Integer, nullable=True)
+    summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

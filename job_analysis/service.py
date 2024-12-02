@@ -1,9 +1,13 @@
+import signal
+import sys
 import logging
 from sqlalchemy.orm import Session
 from data_storage.config import create_db_engine
 from data_storage.models import Job, JobAnalysis
 from .analyzer import JobAnalyzer
 import time
+from concurrent.futures import ThreadPoolExecutor
+import threading
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -12,7 +16,36 @@ class JobAnalysisService:
     def __init__(self):
         self.engine = create_db_engine()
         self.analyzer = JobAnalyzer()
+        self.current_analyses = set()  # 使用 set 存储当前正在处理的分析 ID
+        self.analyses_lock = threading.Lock()  # 用于同步访问 current_analyses
         
+        # 设置线程池
+        self.max_workers = 5  # 可以根据需求调整并发数
+        self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
+        
+        signal.signal(signal.SIGINT, self.handle_shutdown)
+        signal.signal(signal.SIGTERM, self.handle_shutdown)
+    
+    def handle_shutdown(self, signum, frame):
+        """处理终止信号"""
+        logger.info("Received shutdown signal, cleaning up...")
+        
+        self.executor.shutdown(wait=False)
+        
+        with Session(self.engine) as session:
+            with self.analyses_lock:
+                for analysis_id in self.current_analyses:
+                    try:
+                        analysis = session.query(JobAnalysis).get(analysis_id)
+                        if analysis and analysis.status == 'processing':
+                            analysis.status = 'failed'
+                    except Exception as e:
+                        logger.error(f"Error during cleanup: {str(e)}")
+                session.commit()
+        
+        logger.info("Cleanup completed, shutting down...")
+        sys.exit(0)
+    
     def get_pending_jobs(self, session: Session, batch_size: int = 10):
         """获取待分析的工作"""
         # 查找 JobAnalysis 状态为 pending 的工作
@@ -26,22 +59,23 @@ class JobAnalysisService:
     
     def analyze_job(self, session: Session, job: Job):
         """分析单个工作"""
+        analysis = None
         try:
-            # 创建或获取分析记录
             analysis = session.query(JobAnalysis).filter_by(job_id=job.id).first()
             if not analysis:
                 analysis = JobAnalysis(job_id=job.id)
                 session.add(analysis)
             
-            # 更新状态为处理中
             analysis.status = 'processing'
             session.commit()
             
-            # 获取分析结果
+            # 将分析 ID 添加到当前处理集合
+            with self.analyses_lock:
+                self.current_analyses.add(analysis.id)
+            
             result = self.analyzer.analyze(job)
             
             if result:
-                # 更新分析结果
                 analysis.salary_min = result.get('salary_min')
                 analysis.salary_max = result.get('salary_max')
                 analysis.salary_fixed = result.get('salary_fixed')
@@ -60,6 +94,11 @@ class JobAnalysisService:
             if analysis:
                 analysis.status = 'failed'
                 session.commit()
+        finally:
+            # 从当前处理集合中移除分析 ID
+            with self.analyses_lock:
+                self.current_analyses.discard(analysis.id if analysis else None)
+    
     
     def run(self, interval: int = 60):
         """运行服务"""
@@ -68,18 +107,29 @@ class JobAnalysisService:
         while True:
             try:
                 with Session(self.engine) as session:
-                    # 获取一批待处理的工作
-                    jobs = self.get_pending_jobs(session)
+                    jobs = self.get_pending_jobs(session, batch_size=self.max_workers * 2)
                     
                     if not jobs:
                         logger.info("No pending jobs found, waiting...")
                         time.sleep(interval)
                         continue
                     
-                    # 处理每个工作
+                    # 创建新的 Session 对象给每个线程
+                    futures = []
                     for job in jobs:
-                        self.analyze_job(session, job)
-                        
+                        thread_session = Session(self.engine)
+                        future = self.executor.submit(self.analyze_job, thread_session, job)
+                        futures.append((future, thread_session))
+                    
+                    # 等待所有任务完成并关闭 sessions
+                    for future, thread_session in futures:
+                        try:
+                            future.result()
+                        except Exception as e:
+                            logger.error(f"Thread execution error: {str(e)}")
+                        finally:
+                            thread_session.close()
+                            
             except Exception as e:
                 logger.error(f"Error in main loop: {str(e)}")
                 time.sleep(interval)

@@ -5,6 +5,8 @@ from data_storage.models import Job, ExperienceLevel
 import os, json
 from dotenv import load_dotenv
 import logging
+from ratelimit import limits, sleep_and_retry
+import backoff
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -20,6 +22,7 @@ class JobAnalyzer:
             base_url=os.getenv("OPENAI_BASE_URL")
         )
         self.chat_model = os.getenv("CHAT_MODEL")
+        self.calls_per_minute = 50  # 根据你的 API 限制调整
     
     def analyze(self, job: Job) -> Optional[Dict[str, Any]]:
         prompt = self._create_analysis_prompt(job.title, job.full_description)
@@ -55,6 +58,14 @@ class JobAnalyzer:
 
         Return only the JSON object, no additional text."""
 
+    @backoff.on_exception(
+        backoff.expo,
+        (Exception),  # 可以具体指定要处理的异常类型
+        max_tries=5,
+        max_time=300
+    )
+    @sleep_and_retry
+    @limits(calls=50, period=60)  # 每分钟最多 50 次调用
     def _get_llm_analysis(self, prompt: str) -> Optional[Dict[str, Any]]:
         try:
             response = self.client.chat.completions.create(
@@ -81,5 +92,5 @@ class JobAnalyzer:
                 'summary': result.get('summary')
             }
         except Exception as e:
-            print(f"Error in LLM analysis: {str(e)}")
+            logger.error(f"Error in LLM analysis: {str(e)}")
             return None

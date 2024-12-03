@@ -24,12 +24,12 @@ export function JobCard({ job }: JobCardProps) {
 
   return (
     <div
-      className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
       onClick={() => navigate(`/jobs/${job.id}`)}
     >
       <div className="flex justify-between items-start mb-4">
         <div className="flex gap-4">
-        {job.company.icon_url ? (
+          {job.company.icon_url ? (
             <img
               src={job.company.icon_url}
               alt={job.company.name}
@@ -41,8 +41,8 @@ export function JobCard({ job }: JobCardProps) {
             </div>
           )}
           <div>
-            <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
-            <div className="flex items-center gap-4 text-gray-600">
+            <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
+            <div className="flex items-center gap-3 text-gray-500">
               <span className="flex items-center gap-1">
                 <Building2 className="w-4 h-4" />
                 {job.company.name}
@@ -52,7 +52,7 @@ export function JobCard({ job }: JobCardProps) {
                 {job.location}
               </span>
               {job.employment_type && (
-                <span className="text-gray-500 text-sm">
+                <span className="text-gray-400 text-sm">
                   {getEmploymentTypeLabel(job.employment_type)}
                 </span>
               )}
@@ -60,7 +60,7 @@ export function JobCard({ job }: JobCardProps) {
           </div>
         </div>
         {job.is_remote && (
-          <span className="flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+          <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-sm px-3 py-1 rounded-full">
             <Globe className="w-4 h-4" />
             Remote
           </span>
@@ -68,10 +68,10 @@ export function JobCard({ job }: JobCardProps) {
       </div>
       
       {job.summary && (
-        <p className="text-gray-600 mb-4 line-clamp-2">{job.summary}</p>
+        <p className="text-gray-500 mb-4 line-clamp-2">{job.summary}</p>
       )}
       
-      <div className="flex justify-between items-center text-sm text-gray-500">
+      <div className="flex justify-between items-center text-sm text-gray-400">
         {formatSalary() && (
           <span className="font-medium">{formatSalary()}</span>
         )}
@@ -96,7 +96,7 @@ export function JobCard({ job }: JobCardProps) {
           {job.skill_tags.map((tag) => (
             <span
               key={tag}
-              className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+              className="bg-gray-50 text-gray-600 text-xs px-2 py-1 rounded"
             >
               {tag.trim()}
             </span>

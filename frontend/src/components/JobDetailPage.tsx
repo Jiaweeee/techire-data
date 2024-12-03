@@ -4,7 +4,7 @@ import { ArrowLeft, Building2, MapPin, Globe, ExternalLink } from 'lucide-react'
 import { getJobDetail } from '../services/api';
 import type { JobDetail } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
-
+import { getExperienceLevelLabel } from '../types/experience';
 export function JobDetailPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();
@@ -122,6 +122,12 @@ export function JobDetailPage() {
             <div className="bg-gray-100 px-4 py-2 rounded-lg">
               <span className="text-gray-600">Employment Type</span>
               <p className="font-medium">{getEmploymentTypeLabel(job.employment_type)}</p>
+            </div>
+          )}
+          {job.experience_level && (
+            <div className="bg-gray-100 px-4 py-2 rounded-lg">
+              <span className="text-gray-600">Experience Level</span>
+              <p className="font-medium">{getExperienceLevelLabel(job.experience_level)}</p>
             </div>
           )}
         </div>

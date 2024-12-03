@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { JobBrief } from '../types/api';
 import { MapPin, Building2, Clock, Globe } from 'lucide-react';
 import { getEmploymentTypeLabel } from '../types/employment';
-
+import { getExperienceLevelLabel } from '../types/experience';
 interface JobCardProps {
   job: JobBrief;
 }
@@ -74,6 +74,11 @@ export function JobCard({ job }: JobCardProps) {
       <div className="flex justify-between items-center text-sm text-gray-500">
         {formatSalary() && (
           <span className="font-medium">{formatSalary()}</span>
+        )}
+        {job.experience_level && (
+          <span className="font-medium">
+            {getExperienceLevelLabel(job.experience_level)}
+          </span>
         )}
         {postedDate && (
           <span className="flex items-center gap-1">

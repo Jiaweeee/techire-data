@@ -32,4 +32,4 @@ export function getEmploymentTypeLabel(type: EmploymentType | null): string {
         default:
             return '';
     }
-} 
+}

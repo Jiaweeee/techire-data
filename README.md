@@ -59,6 +59,18 @@ Use the `start_local_dev.sh` script to start individual services. Open a separat
 
 # Start the Database viewer
 ./start_local_dev.sh db
+
+# Start the job data crawler
+./start_local_dev.sh crawl
+
+# Start the job analysis service
+./start_local_dev.sh analysis
+
+# Run database migrations
+./start_local_dev.sh migrate
+
+# Generate a new migration with a message
+./start_local_dev.sh migrate "Add user table"
 ```
 
 Make the script executable if needed:

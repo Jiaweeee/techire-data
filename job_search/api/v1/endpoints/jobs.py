@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List, Optional
-from ....schemas.job import JobSearchParams, JobBrief, JobDetail
+from ....schemas.job import JobSearchParams, JobDetail, JobSearchResult
 from ....services.search import JobSearchService
 from ....api.deps import get_db
 from data_storage.models import Job
 
 router = APIRouter()
 
-@router.get("/search", response_model=dict)
+@router.get("/search", response_model=JobSearchResult)
 async def search_jobs(
     db: Session = Depends(get_db),
     params: JobSearchParams = Depends()

@@ -1,36 +1,55 @@
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
-from data_storage.models import Job, Company
+from data_storage.models import Job, Company, JobAnalysis
 from datetime import datetime
 from typing import List, Optional
+from ..schemas.job import JobBrief, CompanyBrief, JobSearchResult
 
 class JobSearchService:
     def __init__(self, db: Session):
         self.db = db
 
-    def _convert_to_job_brief(self, job: Job) -> dict:
-        """Convert SQLAlchemy Job model to dict for serialization"""
-        return {
-            "id": job.id,
-            "title": job.title,
-            "company": {
-                "id": job.company.id,
-                "name": job.company.name,
-                "icon_url": job.company.icon_url
-            },
-            "location": job.location,
-            "employment_type": job.employment_type,
-            "posted_date": job.posted_date,
-            "salary_range": job.salary_range,
-            "is_remote": job.is_remote,
-            "url": job.url
-        }
+    def _convert_to_job_brief(self, job: Job) -> JobBrief:
+        """Convert SQLAlchemy Job model to JobBrief model"""
+        salary_range = None
+        experience_level = None
+        skill_tags = None
+        summary = None
+        if job.analysis:
+            salary_range = {
+                "min": job.analysis.salary_min,
+                "max": job.analysis.salary_max,
+                "fixed": job.analysis.salary_fixed,
+                "currency": job.analysis.salary_currency
+            }
+            experience_level = job.analysis.experience_level if job.analysis.experience_level else None
+            skill_tags = job.analysis.skill_tags.split(',') if job.analysis.skill_tags else []
+            summary = job.analysis.summary
+
+        return JobBrief(
+            id=job.id,
+            title=job.title,
+            company=CompanyBrief(
+                id=job.company.id,
+                name=job.company.name,
+                icon_url=job.company.icon_url
+            ),
+            location=job.location,
+            employment_type=job.employment_type,
+            posted_date=job.posted_date,
+            is_remote=job.is_remote,
+            url=job.url,
+            salary_range=salary_range,
+            experience_level=experience_level,
+            skill_tags=skill_tags,
+            summary=summary
+        )
 
     def search_jobs(
         self,
         query: Optional[str] = None,
         company_ids: Optional[List[str]] = None,
-        employment_types: Optional[List[str]] = None,  # 修改参数名
+        employment_types: Optional[List[str]] = None,
         posted_after: Optional[datetime] = None,
         is_remote: Optional[bool] = None,
         page: int = 1,
@@ -38,10 +57,13 @@ class JobSearchService:
     ):
         query_filters = []
         
-        # Base query
-        base_query = self.db.query(Job).join(Company)
+        # Base query - join with JobAnalysis
+        base_query = self.db.query(Job).join(Company).join(JobAnalysis)
         
-        # Add filters
+        # Add completed status filter for JobAnalysis
+        query_filters.append(JobAnalysis.status == 'completed')
+        
+        # Add other filters
         if query:
             query_filters.append(
                 or_(
@@ -53,7 +75,7 @@ class JobSearchService:
         if company_ids:
             query_filters.append(Job.company_id.in_(company_ids))
             
-        if employment_types:  # 修改这里
+        if employment_types:
             query_filters.append(
                 Job.employment_type.in_(employment_types)
             )
@@ -70,9 +92,8 @@ class JobSearchService:
         query_filters.append(Job.expired == False)
         
         # Apply filters
-        if query_filters:
-            base_query = base_query.filter(and_(*query_filters))
-            
+        base_query = base_query.filter(and_(*query_filters))
+        
         # Order by posted date
         base_query = base_query.order_by(Job.posted_date.desc())
         
@@ -85,9 +106,9 @@ class JobSearchService:
         # Convert SQLAlchemy models to dicts
         job_briefs = [self._convert_to_job_brief(job) for job in results]
         
-        return {
-            "total": total,
-            "page": page,
-            "per_page": per_page,
-            "results": job_briefs
-        }
+        return JobSearchResult(
+            total=total,
+            page=page,
+            per_page=per_page,
+            results=job_briefs
+        )

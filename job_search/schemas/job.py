@@ -28,16 +28,18 @@ class JobBrief(BaseModel):
     location: str
     employment_type: Optional[EmploymentType]
     posted_date: Optional[datetime]
-    salary_range: Optional[str]
     is_remote: Optional[bool]
+    url: str
+    salary_range: Optional[dict] = None
+    experience_level: Optional[int] = None
+    skill_tags: Optional[List[str]] = None
+    summary: Optional[str] = None
     
     class Config:
         from_attributes = True
 
 class JobDetail(JobBrief):
-    url: str
     full_description: str
-    skill_tags: Optional[str]
     
     class Config:
         from_attributes = True
@@ -50,3 +52,9 @@ class JobSearchParams(BaseModel):
     is_remote: Optional[bool] = None
     page: int = Field(default=1, ge=1)
     per_page: int = Field(default=20, ge=1, le=100) 
+
+class JobSearchResult(BaseModel):
+    total: int
+    page: int
+    per_page: int
+    results: List[JobBrief]

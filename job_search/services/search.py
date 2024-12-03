@@ -3,47 +3,11 @@ from sqlalchemy.orm import Session
 from data_storage.models import Job, Company, JobAnalysis
 from datetime import datetime
 from typing import List, Optional
-from ..schemas.job import JobBrief, CompanyBrief, JobSearchResult
+from ..schemas.job import JobBrief, JobDetail, CompanyBrief, JobSearchResult
 
 class JobSearchService:
     def __init__(self, db: Session):
         self.db = db
-
-    def _convert_to_job_brief(self, job: Job) -> JobBrief:
-        """Convert SQLAlchemy Job model to JobBrief model"""
-        salary_range = None
-        experience_level = None
-        skill_tags = None
-        summary = None
-        if job.analysis:
-            salary_range = {
-                "min": job.analysis.salary_min,
-                "max": job.analysis.salary_max,
-                "fixed": job.analysis.salary_fixed,
-                "currency": job.analysis.salary_currency
-            }
-            experience_level = job.analysis.experience_level if job.analysis.experience_level else None
-            skill_tags = job.analysis.skill_tags.split(',') if job.analysis.skill_tags else []
-            summary = job.analysis.summary
-
-        return JobBrief(
-            id=job.id,
-            title=job.title,
-            company=CompanyBrief(
-                id=job.company.id,
-                name=job.company.name,
-                icon_url=job.company.icon_url
-            ),
-            location=job.location,
-            employment_type=job.employment_type,
-            posted_date=job.posted_date,
-            is_remote=job.is_remote,
-            url=job.url,
-            salary_range=salary_range,
-            experience_level=experience_level,
-            skill_tags=skill_tags,
-            summary=summary
-        )
 
     def search_jobs(
         self,
@@ -112,3 +76,74 @@ class JobSearchService:
             per_page=per_page,
             results=job_briefs
         )
+
+    def get_job_detail(self, job_id: str) -> JobDetail:
+        job = self.db.query(Job).filter(Job.id == job_id).first()
+        return self._convert_to_job_detail(job)
+
+    def _convert_to_job_brief(self, job: Job) -> JobBrief:
+        """Convert SQLAlchemy Job model to JobBrief model"""
+        salary_range, experience_level, skill_tags, summary = self._get_job_analysis_data(job)
+        
+        return JobBrief(
+            id=job.id,
+            title=job.title,
+            company=CompanyBrief(
+                id=job.company.id,
+                name=job.company.name,
+                icon_url=job.company.icon_url
+            ),
+            location=job.location,
+            employment_type=job.employment_type,
+            posted_date=job.posted_date,
+            is_remote=job.is_remote,
+            url=job.url,
+            salary_range=salary_range,
+            experience_level=experience_level,
+            skill_tags=skill_tags,
+            summary=summary
+        )
+    
+    def _convert_to_job_detail(self, job: Job) -> JobDetail:
+        """Convert SQLAlchemy Job model to JobDetail model"""
+        salary_range, experience_level, skill_tags, summary = self._get_job_analysis_data(job)
+        
+        return JobDetail(
+            id=job.id,
+            title=job.title,
+            company=CompanyBrief(
+                id=job.company.id,
+                name=job.company.name,
+                icon_url=job.company.icon_url
+            ),
+            location=job.location,
+            employment_type=job.employment_type,
+            posted_date=job.posted_date,
+            is_remote=job.is_remote,
+            url=job.url,
+            salary_range=salary_range,
+            experience_level=experience_level,
+            skill_tags=skill_tags,
+            summary=summary,
+            full_description=job.full_description  # 这是JobDetail特有的字段
+        )
+
+    def _get_job_analysis_data(self, job: Job) -> tuple:
+        """Extract common analysis data from job"""
+        salary_range = None
+        experience_level = None
+        skill_tags = None
+        summary = None
+        
+        if job.analysis:
+            salary_range = {
+                "min": job.analysis.salary_min,
+                "max": job.analysis.salary_max,
+                "fixed": job.analysis.salary_fixed,
+                "currency": job.analysis.salary_currency
+            }
+            experience_level = job.analysis.experience_level if job.analysis.experience_level else None
+            skill_tags = job.analysis.skill_tags.split(',') if job.analysis.skill_tags else []
+            summary = job.analysis.summary
+            
+        return salary_range, experience_level, skill_tags, summary

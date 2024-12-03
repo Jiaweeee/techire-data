@@ -1,21 +1,26 @@
 import { useNavigate } from 'react-router-dom';
-import { JobDetail } from '../types/api';
+import { JobBrief } from '../types/api';
 import { MapPin, Building2, Clock, Globe } from 'lucide-react';
 import { getEmploymentTypeLabel } from '../types/employment';
 
 interface JobCardProps {
-  job: JobDetail;
+  job: JobBrief;
 }
 
 export function JobCard({ job }: JobCardProps) {
   const navigate = useNavigate();
   const postedDate = job.posted_date ? new Date(job.posted_date) : null;
-  const timeAgo = postedDate
-    ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-        Math.ceil((postedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-        'day'
-      )
-    : 'Recently';
+  
+  // Format salary range
+  const formatSalary = () => {
+    if (!job.salary_range) return null;
+    const { min, max, fixed, currency = 'USD' } = job.salary_range;
+    if (fixed) return `${currency} ${fixed.toLocaleString()}`;
+    if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
+    if (min) return `${currency} ${min.toLocaleString()}+`;
+    if (max) return `Up to ${currency} ${max.toLocaleString()}`;
+    return null;
+  };
 
   return (
     <div
@@ -62,21 +67,28 @@ export function JobCard({ job }: JobCardProps) {
         )}
       </div>
       
-      <p className="text-gray-600 mb-4 line-clamp-2">{job.full_description}</p>
+      {job.summary && (
+        <p className="text-gray-600 mb-4 line-clamp-2">{job.summary}</p>
+      )}
       
       <div className="flex justify-between items-center text-sm text-gray-500">
-        {job.salary_range && (
-          <span className="font-medium">{job.salary_range}</span>
+        {formatSalary() && (
+          <span className="font-medium">{formatSalary()}</span>
         )}
-        <span className="flex items-center gap-1">
-          <Clock className="w-4 h-4" />
-          {timeAgo}
-        </span>
+        {postedDate && (
+          <span className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            {new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+              Math.ceil((postedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+              'day'
+            )}
+          </span>
+        )}
       </div>
       
-      {job.skill_tags && (
+      {job.skill_tags && job.skill_tags.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {job.skill_tags.split(',').map((tag) => (
+          {job.skill_tags.map((tag) => (
             <span
               key={tag}
               className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"

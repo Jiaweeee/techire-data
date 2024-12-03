@@ -106,7 +106,16 @@ export function JobDetailPage() {
           {job.salary_range && (
             <div className="bg-gray-100 px-4 py-2 rounded-lg">
               <span className="text-gray-600">Salary</span>
-              <p className="font-medium">{job.salary_range}</p>
+              <p className="font-medium">
+                {(() => {
+                  const { min, max, fixed, currency = 'USD' } = job.salary_range;
+                  if (fixed) return `${currency} ${fixed.toLocaleString()}`;
+                  if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
+                  if (min) return `${currency} ${min.toLocaleString()}+`;
+                  if (max) return `Up to ${currency} ${max.toLocaleString()}`;
+                  return 'Not specified';
+                })()}
+              </p>
             </div>
           )}
           {job.employment_type && (
@@ -117,20 +126,11 @@ export function JobDetailPage() {
           )}
         </div>
 
-        <div className="prose-gray max-w-none">
-          <div 
-            dangerouslySetInnerHTML={{
-                __html: job.full_description
-            }}
-            className="job-section"
-          />
-        </div>
-
-        {job.skill_tags && (
+        {job.skill_tags && job.skill_tags.length > 0 && (
           <div className="mt-8 pt-8 border-t">
             <h2 className="text-lg font-semibold mb-4">Required Skills</h2>
             <div className="flex flex-wrap gap-2">
-              {job.skill_tags.split(',').map((tag) => (
+              {job.skill_tags.map((tag) => (
                 <span
                   key={tag}
                   className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full"
@@ -141,6 +141,15 @@ export function JobDetailPage() {
             </div>
           </div>
         )}
+
+        <div className="prose-gray max-w-none">
+          <div 
+            dangerouslySetInnerHTML={{
+                __html: job.full_description
+            }}
+            className="job-section"
+          />
+        </div>
       </div>
     </div>
   );

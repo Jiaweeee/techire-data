@@ -6,11 +6,11 @@ import { SearchFilters } from './components/SearchFilters';
 import { JobList } from './components/JobList';
 import { Pagination } from './components/Pagination';
 import { searchJobs } from './services/api';
-import type { JobDetail, SearchParams } from './types/api';
+import type { JobBrief, SearchParams } from './types/api';
 import { JobDetailPage } from './components/JobDetailPage';
 
 function App() {
-  const [jobs, setJobs] = useState<JobDetail[]>([]);
+  const [jobs, setJobs] = useState<JobBrief[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [currentQuery, setCurrentQuery] = useState('');

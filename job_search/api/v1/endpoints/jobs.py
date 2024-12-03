@@ -31,4 +31,5 @@ async def get_job_detail(
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
-    return job 
+    search_service = JobSearchService(db)
+    return search_service.get_job_detail(job_id)

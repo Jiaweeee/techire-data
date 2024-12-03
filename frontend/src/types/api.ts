@@ -26,7 +26,7 @@ export interface CompanyDetail extends CompanyBrief {
   headquarters: string | null;
 }
 
-export interface JobDetail {
+export interface JobBrief {
   id: string;
   url: string;
   title: string;
@@ -34,10 +34,20 @@ export interface JobDetail {
   location: string;
   employment_type: EmploymentType | null;
   posted_date: string | null;
-  salary_range: string | null;
   is_remote: boolean | null;
+  salary_range: {
+    min?: number;
+    max?: number;
+    fixed?: number;
+    currency?: string;
+  } | null;
+  experience_level: number | null;
+  skill_tags: string[] | null;
+  summary: string | null;
+}
+
+export interface JobDetail extends JobBrief {
   full_description: string;
-  skill_tags: string | null;
 }
 
 export interface SearchParams {
@@ -51,7 +61,7 @@ export interface SearchParams {
 }
 
 export interface SearchResponse {
-  results: JobDetail[];
+  results: JobBrief[];
   total: number;
   page: number;
   per_page: number;

@@ -1,8 +1,8 @@
-import { JobDetail } from '../types/api';
+import { JobBrief } from '../types/api';
 import { JobCard } from './JobCard';
 
 interface JobListProps {
-  jobs: JobDetail[];
+  jobs: JobBrief[];
   isLoading: boolean;
   total: number;
   searchQuery?: string;

@@ -42,7 +42,13 @@ start_db() {
 # Function to start spider crawling
 start_crawl() {
     echo "Starting job data crawler..."
-    python run_spiders.py
+    if [ -n "$2" ]; then
+        echo "Crawling specific spider: $2"
+        python run_spiders.py "$2"
+    else
+        echo "Crawling all spiders"
+        python run_spiders.py
+    fi
 }
 
 # Function to start job analysis service
@@ -74,7 +80,7 @@ case "$1" in
         start_db
         ;;
     "crawl")
-        start_crawl
+        start_crawl "$1" "$2"
         ;;
     "analysis")
         start_analysis

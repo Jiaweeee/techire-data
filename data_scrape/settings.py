@@ -9,6 +9,8 @@
 
 BOT_NAME = "data_scrape"
 
+# LOG_LEVEL = "INFO"
+
 SPIDER_MODULES = ["data_scrape.spiders"]
 NEWSPIDER_MODULE = "data_scrape.spiders"
 

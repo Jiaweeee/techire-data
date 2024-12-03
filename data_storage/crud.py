@@ -115,6 +115,26 @@ class JobCRUD(BaseCRUD[Job]):
             expired=expired
         )
 
+    def mark_jobs_expired(self, company_id: str, active_job_urls: set[str]) -> int:
+        """
+        将不在 active_job_urls 中的工作标记为过期
+        返回更新的记录数量
+        """
+        if not active_job_urls:  # 安全检查：如果活跃URL集合为空，不执行更新
+            return 0
+            
+        with self._get_session() as session:
+            result = session.query(Job).filter(
+                Job.company_id == company_id,
+                Job.expired == False,
+                ~Job.url.in_(active_job_urls)
+            ).update(
+                {Job.expired: True}, 
+                synchronize_session=False
+            )
+            session.commit()
+            return result
+
 class JobAnalysisCRUD(BaseCRUD[JobAnalysis]):
     def __init__(self):
         super().__init__(JobAnalysis)

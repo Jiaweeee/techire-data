@@ -28,7 +28,6 @@ class JobInfoStoragePipeline:
                 url=item.url,
                 full_description=item.full_description,
                 company_id=item.company_id,
-                job_id=item.job_id,
                 posted_date=posted_date,
                 employment_type=employment_type,
                 location=', '.join(item.locations),

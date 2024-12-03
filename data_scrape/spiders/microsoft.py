@@ -37,7 +37,6 @@ class MicrosoftSpider(BasePagingJobSpider):
             company_id=self.company.id,
             title=job_detail['title'],
             url=f"https://jobs.careers.microsoft.com/global/en/job/{job_id}",
-            job_id=job_id,
             full_description=self._parse_job_description(job_detail),
             raw_posted_date=posted_date,
             raw_employment_type=job_detail['employmentType'],

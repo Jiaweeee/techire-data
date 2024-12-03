@@ -13,7 +13,6 @@ class JobItem:
     title: str
     url: str
     full_description: str
-    job_id: Optional[str] = None
     raw_posted_date: Optional[str] = None
     raw_employment_type: Optional[str] = None
     locations: List[str] = field(default_factory=list)

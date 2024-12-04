@@ -48,34 +48,34 @@ Once started, access the database viewer at `http://localhost:4983` in your brow
 ## 3. Project Components Setup
 
 ### Quick Start Script
-Use the `start_local_dev.sh` script to start individual services. Open a separate terminal for each service you want to run:
+Use the `local_dev.sh` script to start individual services. Open a separate terminal for each service you want to run:
 
 ```bash
 # Start the Job Search API service
-./start_local_dev.sh api
+./local_dev.sh api
 
 # Start the Frontend application
-./start_local_dev.sh frontend
+./local_dev.sh ui
 
 # Start the Database viewer
-./start_local_dev.sh db
+./local_dev.sh db
 
 # Start the job data crawler
-./start_local_dev.sh crawl
+./local_dev.sh crawl
 
 # Start the job analysis service
-./start_local_dev.sh analysis
+./local_dev.sh analysis
 
 # Run database migrations
-./start_local_dev.sh migrate
+./local_dev.sh migrate
 
 # Generate a new migration with a message
-./start_local_dev.sh migrate "Add user table"
+./local_dev.sh migrate "Add user table"
 ```
 
 Make the script executable if needed:
 ```bash
-chmod +x start_local_dev.sh
+chmod +x local_dev.sh
 ```
 
 Each command will start the respective service in the current terminal window with live logs output.

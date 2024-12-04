@@ -4,7 +4,7 @@
         "name": "Microsoft",
         "official_site_url": "https://www.microsoft.com",
         "careers_page_url": "https://jobs.careers.microsoft.com/global/en/search",
-        "icon_url": "",
+        "icon_url": "https://static.cdnlogo.com/logos/m/95/microsoft.svg",
         "introduction": "Every company has a mission. What's ours? To empower every person and every organization to achieve more. We believe technology can and should be a force for good and that meaningful innovation contributes to a brighter world in the future and today. Our culture doesn’t just encourage curiosity; it embraces it. Each day we make progress together by showing up as our authentic selves. We show up with a learn-it-all mentality. We show up cheering on others, knowing their success doesn't diminish our own. We show up every day open to learning our own biases, changing our behavior, and inviting in differences. Because impact matters. \n\nMicrosoft operates in 190 countries and is made up of approximately 228,000 passionate employees worldwide.",
         "industry": "Software Development",
         "headquarters": "Redmond, Washington, United States"
@@ -14,7 +14,7 @@
         "name": "Google",
         "official_site_url": "https://www.google.com/",
         "careers_page_url": "https://www.google.com/about/careers/applications/jobs/results",
-        "icon_url": "",
+        "icon_url": "https://static.cdnlogo.com/logos/g/23/goolge-icon.png",
         "introduction": "A problem isn't truly solved until it's solved for all. Googlers build products that help create opportunities for everyone, whether down the street or across the globe. Bring your insight, imagination and a healthy disregard for the impossible. Bring everything that makes you unique. Together, we can build for everyone.",
         "industry": "Software Development",
         "headquarters": "Mountain View, CA, United States"

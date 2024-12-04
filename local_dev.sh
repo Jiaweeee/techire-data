@@ -5,7 +5,7 @@ print_usage() {
     echo "Usage: $0 [api|frontend|db|crawl|analysis|migrate [message]|all]"
     echo "Examples:"
     echo "  $0 api       # Start Job Search API service"
-    echo "  $0 frontend  # Start Frontend application"
+    echo "  $0 ui  # Start Frontend application"
     echo "  $0 db       # Start Database viewer"
     echo "  $0 crawl    # Start job data crawler"
     echo "  $0 analysis # Start job analysis service"
@@ -73,7 +73,6 @@ case "$1" in
     "api")
         start_api
         ;;
-    "frontend")
         start_frontend
         ;;
     "db")
@@ -91,12 +90,12 @@ case "$1" in
     "all")
         echo "Error: Cannot start all services in the current terminal."
         echo "Please start each service in a separate terminal:"
-        echo "./start_local_dev.sh api"
-        echo "./start_local_dev.sh frontend"
-        echo "./start_local_dev.sh db"
-        echo "./start_local_dev.sh crawl"
-        echo "./start_local_dev.sh analysis"
-        echo "./start_local_dev.sh migrate"
+        echo "./local_dev.sh api"
+        echo "./local_dev.sh ui"
+        echo "./local_dev.sh db"
+        echo "./local_dev.sh crawl"
+        echo "./local_dev.sh analysis"
+        echo "./local_dev.sh migrate"
         exit 1
         ;;
     *)

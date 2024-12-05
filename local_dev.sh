@@ -73,6 +73,7 @@ case "$1" in
     "api")
         start_api
         ;;
+    "ui")
         start_frontend
         ;;
     "db")

@@ -14,11 +14,14 @@ class Settings(BaseSettings):
     ]
     
     # Elasticsearch 配置
-    ES_HOSTS: List[str] = ["http://localhost:9200"]
-    ES_USERNAME: str = "elastic"
-    ES_PASSWORD: str = "123456"
-    ES_JOB_INDEX: str = "jobs"
-    ES_TIMEOUT: int = 30
+    ES_HOSTS: List[str]
+    ES_USERNAME: str
+    ES_PASSWORD: str
+    ES_JOB_INDEX: str
+    ES_TIMEOUT: int
+    ES_MAX_RETRIES: int = 3
+    ES_MAX_CONNECTIONS: int = 100
+    ES_RETRY_ON_TIMEOUT: bool = True
     
     class Config:
         case_sensitive = True

@@ -7,7 +7,10 @@ class ESClient:
         self.client = Elasticsearch(
             settings.ES_HOSTS,
             basic_auth=(settings.ES_USERNAME, settings.ES_PASSWORD),
-            timeout=settings.ES_TIMEOUT
+            request_timeout=settings.ES_TIMEOUT,
+            max_retries=settings.ES_MAX_RETRIES,
+            retry_on_timeout=settings.ES_RETRY_ON_TIMEOUT,
+            connections_per_node=settings.ES_MAX_CONNECTIONS
         )
     
     def create_index(self, index_name: str, mapping: dict):

@@ -104,8 +104,17 @@ class Company(Base):
 class JobAnalysis(Base):
     __tablename__ = 'job_analyses'
     
-    job_id: Mapped[str] = mapped_column(String(64), ForeignKey("jobs.id"), unique=True, nullable=False)
-    job: Mapped["Job"] = relationship("Job", back_populates="analysis")
+    job_id: Mapped[str] = mapped_column(
+        String(64), 
+        ForeignKey("jobs.id", ondelete="CASCADE"),
+        unique=True, 
+        nullable=False
+    )
+    job: Mapped["Job"] = relationship(
+        "Job", 
+        back_populates="analysis",
+        cascade="all, delete"
+    )
     
     status: Mapped[str] = mapped_column(
         String(32), 

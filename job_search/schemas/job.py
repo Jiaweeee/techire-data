@@ -21,6 +21,12 @@ class CompanyDetail(CompanyBrief):
     class Config:
         from_attributes = True
 
+class SalaryRange(BaseModel):
+    min: Optional[int] = None
+    max: Optional[int] = None
+    fixed: Optional[int] = None
+    currency: Optional[str] = None
+
 class JobBrief(BaseModel):
     id: str
     title: str
@@ -30,7 +36,7 @@ class JobBrief(BaseModel):
     posted_date: Optional[datetime]
     is_remote: Optional[bool]
     url: str
-    salary_range: Optional[dict] = None
+    salary_range: Optional[SalaryRange] = None
     experience_level: Optional[int] = None
     skill_tags: Optional[List[str]] = None
     summary: Optional[str] = None

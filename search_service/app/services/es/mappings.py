@@ -13,6 +13,10 @@ JOB_MAPPING = {
                 "type": "text",
                 "analyzer": "standard"
             },
+            "summary": {
+                "type": "text",
+                "analyzer": "standard"
+            },
             "company": {
                 "properties": {
                     "id": {"type": "keyword"},
@@ -21,7 +25,8 @@ JOB_MAPPING = {
                         "fields": {
                             "keyword": {"type": "keyword"}
                         }
-                    }
+                    },
+                    "icon_url": {"type": "keyword"}
                 }
             },
             "skill_tags": {
@@ -37,7 +42,17 @@ JOB_MAPPING = {
                 "format": "strict_date_optional_time||date_optional_time"
             },
             "is_remote": {"type": "boolean"},
-            "expired": {"type": "boolean"}
+            "expired": {"type": "boolean"},
+            "url": {"type": "keyword"},
+            "salary_range": {
+                "properties": {
+                    "min": {"type": "integer"},
+                    "max": {"type": "integer"},
+                    "fixed": {"type": "integer"},
+                    "currency": {"type": "keyword"}
+                }
+            },
+            "experience_level": {"type": "integer"}
         }
     }
 } 

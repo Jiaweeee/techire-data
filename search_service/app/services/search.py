@@ -1,7 +1,6 @@
-from typing import Dict, Any, List, Optional
-from datetime import datetime
+from typing import Dict, Any
 from .es.client import ESClient
-from ..schemas.search import SearchParams, SearchResult, SearchResponse, Company
+from ..schemas.search import SearchParams, SearchResult, SearchResponse, Company, SalaryRange
 
 class SearchService:
     def __init__(self):
@@ -46,6 +45,7 @@ class SearchService:
                         "title^3",
                         "skill_tags^2",
                         "company.name^1.5",
+                        "summary^1.2",
                         "full_description^1"
                     ],
                     "type": "best_fields",
@@ -63,6 +63,15 @@ class SearchService:
                             "query": params.q,
                             "boost": 2,
                             "slop": 1
+                        }
+                    }
+                },
+                {
+                    "match_phrase": {
+                        "summary": {
+                            "query": params.q,
+                            "boost": 1.5,
+                            "slop": 2
                         }
                     }
                 },
@@ -129,23 +138,40 @@ class SearchService:
         search_results = []
         for hit in hits.get("hits", []):
             source = hit.get("_source", {})
-            score = hit.get("_score", 0.0)  # 确保有默认分数
+            score = hit.get("_score", 0.0)
             
-            # 确保 employment_type 是字符串
-            employment_type = str(source.get("employment_type", "")) if source.get("employment_type") else None
+            # 获取薪资范围
+            salary_range = source.get("salary_range", {})
+            if salary_range:
+                salary_range = SalaryRange(
+                    min=salary_range.get("min"),
+                    max=salary_range.get("max"),
+                    fixed=salary_range.get("fixed"),
+                    currency=salary_range.get("currency")
+                )
+            
+            # 构建公司信息
+            company = source.get("company", {})
+            if company:
+                company = Company(
+                    id=company.get("id"),
+                    name=company.get("name"),
+                    icon_url=company.get("icon_url")
+                )
             
             result = SearchResult(
                 id=source.get("id"),
                 title=source.get("title"),
-                company=Company(
-                    id=source.get("company", {}).get("id"),
-                    name=source.get("company", {}).get("name")
-                ),
+                company=company,
                 location=source.get("location"),
-                employment_type=employment_type,
+                employment_type=source.get("employment_type"),
                 posted_date=source.get("posted_date"),
                 is_remote=source.get("is_remote", False),
+                url=source.get("url"),
                 skill_tags=source.get("skill_tags", []),
+                summary=source.get("summary"),
+                salary_range=salary_range,
+                experience_level=source.get("experience_level"),
                 score=score
             )
             search_results.append(result)

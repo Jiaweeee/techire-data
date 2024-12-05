@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from data_storage.models import Job, Company, JobAnalysis
 from datetime import datetime
 from typing import List, Optional
-from ..schemas.job import JobBrief, JobDetail, CompanyBrief, JobSearchResult
+from ..schemas.job import JobBrief, JobDetail, CompanyBrief, JobSearchResult, SalaryRange
 
 class JobSearchService:
     def __init__(self, db: Session):
@@ -136,12 +136,12 @@ class JobSearchService:
         summary = None
         
         if job.analysis:
-            salary_range = {
-                "min": job.analysis.salary_min,
-                "max": job.analysis.salary_max,
-                "fixed": job.analysis.salary_fixed,
-                "currency": job.analysis.salary_currency
-            }
+            salary_range = SalaryRange(
+                min=job.analysis.salary_min,
+                max=job.analysis.salary_max,
+                fixed=job.analysis.salary_fixed,
+                currency=job.analysis.salary_currency
+            )
             experience_level = job.analysis.experience_level if job.analysis.experience_level else None
             skill_tags = job.analysis.skill_tags.split(',') if job.analysis.skill_tags else []
             summary = job.analysis.summary

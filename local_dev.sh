@@ -8,7 +8,7 @@ print_usage() {
     echo "  $0 ui  # Start Frontend application"
     echo "  $0 db       # Start Database viewer"
     echo "  $0 crawl    # Start job data crawler"
-    echo "  $0 analysis # Start job analysis service"
+    echo "  $0 process # Start data processing service"
     echo "  $0 migrate  # Apply existing migrations"
     echo "  $0 migrate \"Add user table\" # Generate new migration"
     echo "  $0 all      # Start all services"
@@ -52,9 +52,9 @@ start_crawl() {
 }
 
 # Function to start job analysis service
-start_analysis() {
-    echo "Starting job analysis service..."
-    python -m job_analysis.main
+start_processing() {
+    echo "Starting data processing service..."
+    python -m data_processor.main
 }
 
 # Function to run database migrations
@@ -82,8 +82,8 @@ case "$1" in
     "crawl")
         start_crawl "$1" "$2"
         ;;
-    "analysis")
-        start_analysis
+    "process")
+        start_processing
         ;;
     "migrate")
         start_migrate "$1" "$2"
@@ -95,7 +95,7 @@ case "$1" in
         echo "./local_dev.sh ui"
         echo "./local_dev.sh db"
         echo "./local_dev.sh crawl"
-        echo "./local_dev.sh analysis"
+        echo "./local_dev.sh process"
         echo "./local_dev.sh migrate"
         exit 1
         ;;

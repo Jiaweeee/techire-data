@@ -80,7 +80,7 @@ class JobProcessingService:
         )
     
     def _process_job(self, session: Session, job: Job):
-        """分析单个工作"""
+        """process single job"""
         analysis = None
         try:
             analysis = session.query(JobAnalysis).filter_by(job_id=job.id).first()

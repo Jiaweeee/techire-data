@@ -63,8 +63,8 @@ Use the `local_dev.sh` script to start individual services. Open a separate term
 # Start the job data crawler
 ./local_dev.sh crawl
 
-# Start the job analysis service
-./local_dev.sh analysis
+# Start the data processing service
+./local_dev.sh process
 
 # Run database migrations
 ./local_dev.sh migrate
@@ -125,8 +125,8 @@ npm run dev
 
 The frontend will be available at `http://localhost:5173`
 
-### Job Analysis Service
-This service analyzes job postings using LLM to extract structured information like salary range, required skills, and experience level.
+### Data Processing Service
+This service does all the data processing work, including job analysis, indexing, and updating the database.
 
 1. Set up environment variables:
 ```bash
@@ -136,10 +136,10 @@ OPENAI_BASE_URL=https://api.openai.com/v1  # or your custom endpoint
 CHAT_MODEL=gpt-4o-mini  # or other supported models
 ```
 
-2. Start the analysis service:
+2. Start the data processing service:
 ```bash
 # Development mode
-python -m job_analysis.main
+python -m data_processor.main
 ```
 
 The service will:

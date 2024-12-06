@@ -1,5 +1,5 @@
-from search_service.app.services.es.client import ESClient
-from search_service.app.core.config import settings
+from backend.app.services.es.client import ESClient
+from backend.app.core.config import settings
 
 def delete_index():
     """删除 Elasticsearch 索引"""

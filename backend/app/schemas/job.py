@@ -1,12 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from .company import CompanyBrief
 
-class Company(BaseModel):
-    id: str
-    name: str
-    icon_url: Optional[str] = None
-
-class SearchParams(BaseModel):
+class JobSearchParams(BaseModel):
     q: Optional[str] = None
     location: Optional[str] = None
     employment_type: Optional[str] = None
@@ -21,10 +17,10 @@ class SalaryRange(BaseModel):
     fixed: Optional[float] = None
     currency: Optional[str] = None
 
-class SearchResult(BaseModel):
+class JobBrief(BaseModel):
     id: str
     title: str
-    company: Company
+    company: CompanyBrief
     location: Optional[str] = None
     employment_type: Optional[int] = None
     posted_date: Optional[str] = None
@@ -36,8 +32,11 @@ class SearchResult(BaseModel):
     experience_level: Optional[int] = None
     score: Optional[float] = 0.0
 
-class SearchResponse(BaseModel):
+class JobDetail(JobBrief):
+    full_description: str
+
+class JobSearchResponse(BaseModel):
     total: int
-    results: List[SearchResult]
+    results: List[JobBrief] = []
     page: int
     per_page: int 

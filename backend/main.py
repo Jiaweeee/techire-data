@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from search_service.app.core.config import settings
-from search_service.app.api.v1.endpoints import search
+from backend.app.core.config import settings
+from backend.app.api.v1.router import api_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -18,13 +18,13 @@ app.add_middleware(
 )
 
 # 添加路由
-app.include_router(search.router, prefix=f"{settings.API_V1_STR}/search")
+app.include_router(api_router, prefix=f"{settings.API_V1_STR}")
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "search_service.main:app",
+        "backend.main:app",
         host="0.0.0.0",
-        port=8001,
+        port=8000,
         reload=True
     ) 

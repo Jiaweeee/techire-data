@@ -4,7 +4,7 @@
 print_usage() {
     echo "Usage: $0 [api|frontend|db|crawl|analysis|migrate [message]|all]"
     echo "Examples:"
-    echo "  $0 api       # Start Job Search API service"
+    echo "  $0 api       # Start Backend API service"
     echo "  $0 ui  # Start Frontend application"
     echo "  $0 db       # Start Database viewer"
     echo "  $0 crawl    # Start job data crawler"
@@ -23,8 +23,8 @@ fi
 
 # Function to start API service
 start_api() {
-    echo "Starting Job Search API service..."
-    cd job_search && python -m job_search.main
+    echo "Starting Backend API service..."
+    cd backend && python -m backend.main
 }
 
 # Function to start Frontend

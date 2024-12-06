@@ -80,22 +80,22 @@ chmod +x local_dev.sh
 
 Each command will start the respective service in the current terminal window with live logs output.
 
-### Job Search API Service
+### Backend API Service
 
 1. Install dependencies:
 ```bash
-cd job_search
+cd backend
 pip install -e .
-pip install fastapi uvicorn
+pip install -r requirements.txt
 ```
 
 2. Start the API service:
 ```bash
 # Development mode (with auto-reload)
-python -m job_search.main
+python -m backend.main
 
 # Or production mode
-gunicorn job_search.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
+gunicorn backend.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
 ```
 
 The service will be available at `http://localhost:8000`
@@ -105,7 +105,7 @@ The service will be available at `http://localhost:8000`
 - ReDoc: `http://localhost:8000/redoc`
 
 #### Available Endpoints
-- Search jobs: `GET /api/v1/jobs/search`
+- Search jobs: `POST /api/v1/jobs/search`
 - Get job details: `GET /api/v1/jobs/detail`
 - List companies: `GET /api/v1/companies`
 - Get company details: `GET /api/v1/companies/detail`
@@ -133,7 +133,7 @@ This service analyzes job postings using LLM to extract structured information l
 # In .env file
 OPENAI_API_KEY=your_api_key
 OPENAI_BASE_URL=https://api.openai.com/v1  # or your custom endpoint
-CHAT_MODEL=gpt-3.5-turbo  # or other supported models
+CHAT_MODEL=gpt-4o-mini  # or other supported models
 ```
 
 2. Start the analysis service:

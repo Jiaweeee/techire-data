@@ -30,9 +30,24 @@ class BaseCRUD(Generic[T]):
         with self._get_session() as session:
             return self.model.get(session, id_)
     
-    def get_all(self) -> List[T]:
+    def get_all(self, page: Optional[int] = None, page_size: Optional[int] = None) -> dict:
+        """
+        获取数据列表，支持分页
+        :param page: 页码，从1开始。若为None则返回所有数据
+        :param page_size: 每页数量。若为None则返回所有数据
+        :return: 包含总数和数据列表的字典
+        """
         with self._get_session() as session:
-            return session.query(self.model).all()
+            # 构建查询
+            query = session.query(self.model)
+            
+            # 如果提供了分页参数，则进行分页查询
+            if page is not None and page_size is not None:
+                offset = (page - 1) * page_size
+                items = query.offset(offset).limit(page_size).all()
+            else:
+                items = query.all()
+            return items
     
     def update(self, id_: str, **kwargs) -> Optional[T]:
         with self._get_session() as session:

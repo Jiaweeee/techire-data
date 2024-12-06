@@ -4,7 +4,7 @@ from typing import List
 class Settings(BaseSettings):
     # API 配置
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Search Service"
+    PROJECT_NAME: str = "Backend Service"
     
     # CORS 配置
     BACKEND_CORS_ORIGINS: List[str] = [

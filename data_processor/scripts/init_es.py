@@ -1,5 +1,5 @@
 from backend.app.services.es.client import ESClient
-from backend.app.services.es.mappings import JOB_MAPPING
+from data_processor.elasticsearch.mappings import JOB_MAPPING
 from backend.app.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

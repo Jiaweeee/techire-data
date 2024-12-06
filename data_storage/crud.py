@@ -156,7 +156,7 @@ class JobAnalysisCRUD(BaseCRUD[JobAnalysis]):
     
     def create(self,
                job_id: str,
-               status: str,
+               status: str = 'pending',
                salary_min: Optional[float] = None,
                salary_max: Optional[float] = None,
                salary_fixed: Optional[float] = None,
@@ -175,4 +175,8 @@ class JobAnalysisCRUD(BaseCRUD[JobAnalysis]):
             experience_level=experience_level.value if experience_level else None,
             summary=summary
         )
+    
+    def get(self, job_id: str) -> Optional[JobAnalysis]:
+        with self._get_session() as session:
+            return session.query(JobAnalysis).filter(JobAnalysis.job_id == job_id).first()
 

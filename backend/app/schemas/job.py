@@ -30,6 +30,7 @@ class JobBrief(BaseModel):
     summary: Optional[str] = None
     salary_range: Optional[SalaryRange] = None
     experience_level: Optional[int] = None
+    expired: Optional[bool] = False
     score: Optional[float] = 0.0
 
 class JobDetail(JobBrief):

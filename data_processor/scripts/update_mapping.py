@@ -1,6 +1,6 @@
-from app.services.es.client import ESClient
-from app.services.es.mappings import JOB_MAPPING
-from app.core.config import settings
+from backend.app.services.es.client import ESClient
+from data_processor.elasticsearch.mappings import JOB_MAPPING
+from backend.app.core.config import settings
 from datetime import datetime
 
 def update_mapping():

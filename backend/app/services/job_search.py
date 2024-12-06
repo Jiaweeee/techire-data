@@ -171,6 +171,7 @@ class JobSearchService:
                 summary=source.get("summary"),
                 salary_range=salary_range,
                 experience_level=source.get("experience_level"),
+                expired=source.get("expired", False),
                 score=score
             )
             search_results.append(result)

@@ -67,4 +67,20 @@ class ESClient:
     def delete_index(self, index: str):
         """删除索引"""
         if self.client.indices.exists(index=index):
-            return self.client.indices.delete(index=index) 
+            return self.client.indices.delete(index=index)
+    
+    def exists_document(self, doc_id: str) -> bool:
+        """检查文档是否存在"""
+        return self.client.exists(
+            index=settings.ES_JOB_INDEX,
+            id=doc_id
+        )
+    
+    def update_document(self, doc_id: str, document: Dict[str, Any]) -> Dict[str, Any]:
+        """更新文档"""
+        return self.client.update(
+            index=settings.ES_JOB_INDEX,
+            id=doc_id,
+            doc=document
+        )
+    

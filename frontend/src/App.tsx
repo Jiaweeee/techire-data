@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Logo } from './components/Logo';
 import { SearchBar } from './components/SearchBar';
-import { SearchFilters } from './components/SearchFilters';
 import { JobList } from './components/JobList';
 import { Pagination } from './components/Pagination';
 import { searchJobs } from './services/api';
@@ -35,11 +34,6 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleFilterChange = (filters: Partial<SearchParams>) => {
-    const newParams = { ...searchParams, ...filters };
-    setSearchParams(newParams);
   };
 
   const handlePageChange = (page: number) => {
@@ -83,7 +77,6 @@ function App() {
                 <div className="flex justify-center">
                   <SearchBar onSearch={handleQueryChange} />
                 </div>
-                <SearchFilters onFilterChange={handleFilterChange} />
 
                 <div className="mt-8">
                   <JobList 

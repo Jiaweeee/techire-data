@@ -4,7 +4,6 @@ import logging
 from sqlalchemy.orm import Session
 from data_storage.config import create_db_engine
 from data_storage.models import Job, JobAnalysis
-from .analyzer import JobAnalyzer
 import time
 from concurrent.futures import ThreadPoolExecutor
 import threading
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 class JobProcessingService:
     def __init__(self):
         self.engine = create_db_engine()
-        self.analyzer = JobAnalyzer()
         self.current_analyses = set()  # 使用 set 存储当前正在处理的分析 ID
         self.lock = threading.Lock()  # 用于同步访问 current_analyses
         

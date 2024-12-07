@@ -5,7 +5,7 @@ from backend.app.schemas import CompanyDetail
 
 router = APIRouter()
 
-@router.get("/", response_model=List[CompanyDetail])
+@router.get("/list", response_model=List[CompanyDetail])
 async def get_companies(
     page: Optional[int] = None,
     page_size: Optional[int] = None

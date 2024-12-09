@@ -111,9 +111,9 @@ class JobSearchService:
             })
         
         # 添加工作类型过滤
-        if params.employment_type:
+        if params.employment_types:
             query["query"]["bool"]["filter"].append({
-                "term": {"employment_type": params.employment_type}
+                "terms": {"employment_type": params.employment_types}
             })
         
         # 添加远程工作过滤

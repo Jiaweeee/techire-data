@@ -101,6 +101,19 @@ class CompanyCRUD(BaseCRUD[Company]):
             industry=industry,
             headquarters=headquarters
         )
+    
+    def search(self, name: str, limit: int = 10) -> List[Company]:
+        """
+        搜索公司名称
+        :param name: 搜索关键词
+        :param limit: 返回结果数量限制
+        :return: 匹配的公司列表
+        """
+        with self._get_session() as session:
+            return session.query(Company)\
+                .filter(Company.name.ilike(f"%{name}%"))\
+                .limit(limit)\
+                .all()
 
 class JobCRUD(BaseCRUD[Job]):
     def __init__(self):

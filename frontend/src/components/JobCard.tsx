@@ -1,108 +1,113 @@
 import { useNavigate } from 'react-router-dom';
 import { JobBrief } from '../types/api';
-import { MapPin, Building2, Clock, Globe } from 'lucide-react';
-import { getEmploymentTypeLabel } from '../types/employment';
+import { MapPin, Building2, Clock, Briefcase, DollarSign } from 'lucide-react';
 import { getExperienceLevelLabel } from '../types/experience';
+
 interface JobCardProps {
   job: JobBrief;
 }
 
 export function JobCard({ job }: JobCardProps) {
-  const navigate = useNavigate();
-  const postedDate = job.posted_date ? new Date(job.posted_date) : null;
+    const navigate = useNavigate();
+    const postedDate = job.posted_date ? new Date(job.posted_date) : null;
+    
+    const formatSalary = () => {
+      if (!job.salary_range) return 'Unknown';
+      const { min, max, fixed, currency = 'USD' } = job.salary_range;
+      if (fixed) return `${currency} ${fixed.toLocaleString()}`;
+      if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
+      if (min) return `${currency} ${min.toLocaleString()}+`;
+      if (max) return `Up to ${currency} ${max.toLocaleString()}`;
+      return 'Unknown';
+    };
   
-  // Format salary range
-  const formatSalary = () => {
-    if (!job.salary_range) return null;
-    const { min, max, fixed, currency = 'USD' } = job.salary_range;
-    if (fixed) return `${currency} ${fixed.toLocaleString()}`;
-    if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
-    if (min) return `${currency} ${min.toLocaleString()}+`;
-    if (max) return `Up to ${currency} ${max.toLocaleString()}`;
-    return null;
-  };
-
-  return (
-    <div
-      className="bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
-      onClick={() => navigate(`/jobs/${job.id}`)}
-    >
-      <div className="flex justify-between items-start mb-4">
+    return (
+      <div
+        onClick={() => navigate(`/jobs/${job.id}`)}
+        className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all cursor-pointer h-full flex flex-col p-6 gap-4"
+      >
+        {/* Company Logo & Title Section */}
         <div className="flex gap-4">
+          {/* Logo Container */}
           {job.company.icon_url ? (
             <img
               src={job.company.icon_url}
               alt={job.company.name}
-              className="w-12 h-12 rounded-lg object-cover"
+              className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-gray-100"
             />
           ) : (
-            <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
               <Building2 className="w-6 h-6 text-gray-400" />
             </div>
           )}
-          <div>
-            <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
-            <div className="flex items-center gap-3 text-gray-500">
-              <span className="flex items-center gap-1">
-                <Building2 className="w-4 h-4" />
-                {job.company.name}
+          
+          {/* Title and Company Info */}
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-base text-gray-900 mb-1 line-clamp-1">{job.title}</h3>
+            <p className="text-gray-500 text-sm">{job.company.name}</p>
+          </div>
+        </div>
+  
+        {/* Job Description */}
+        {job.summary && (
+          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">{job.summary}</p>
+        )}
+  
+        {/* Tags and Info Section */}
+        <div className="space-y-4 mt-auto">
+          {/* Primary Tags */}
+          <div className="flex flex-wrap gap-2">
+            {job.experience_level && (
+              <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded text-xs font-medium inline-flex items-center gap-1">
+                <Briefcase className="w-3.5 h-3.5" />
+                {getExperienceLevelLabel(job.experience_level)}
               </span>
-              <span className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" />
-                {job.location}
-              </span>
-              {job.employment_type && (
-                <span className="text-gray-400 text-sm">
-                  {getEmploymentTypeLabel(job.employment_type)}
+            )}
+            <span className="bg-green-50 text-green-700 px-2.5 py-1 rounded text-xs font-medium inline-flex items-center gap-1">
+              <DollarSign className="w-3.5 h-3.5" />
+              {formatSalary()}
+            </span>
+          </div>
+  
+          {/* Location Info */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <span>{job.location}</span>
+              {job.is_remote && (
+                <span className="bg-gray-50 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">
+                  Remote
                 </span>
               )}
             </div>
           </div>
-        </div>
-        {job.is_remote && (
-          <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-sm px-3 py-1 rounded-full">
-            <Globe className="w-4 h-4" />
-            Remote
-          </span>
-        )}
-      </div>
-      
-      {job.summary && (
-        <p className="text-gray-500 mb-4 line-clamp-2">{job.summary}</p>
-      )}
-      
-      <div className="flex justify-between items-center text-sm text-gray-400">
-        {formatSalary() && (
-          <span className="font-medium">{formatSalary()}</span>
-        )}
-        {job.experience_level && (
-          <span className="font-medium">
-            {getExperienceLevelLabel(job.experience_level)}
-          </span>
-        )}
-        {postedDate && (
-          <span className="flex items-center gap-1">
-            <Clock className="w-4 h-4" />
-            {new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-              Math.ceil((postedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-              'day'
+  
+          {/* Bottom Row - Posted Date and Apply Button */}
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+              <Clock className="w-4 h-4" />
+              <span>
+                {postedDate
+                  ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+                      Math.ceil((postedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+                      'day'
+                    )
+                  : 'Recent'}
+              </span>
+            </div>
+            {job.url && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(job.url, '_blank');
+                }}
+                className="border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-1.5 rounded text-sm font-medium transition-colors"
+              >
+                Apply Now
+              </button>
             )}
-          </span>
-        )}
-      </div>
-      
-      {job.skill_tags && job.skill_tags.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {job.skill_tags.map((tag) => (
-            <span
-              key={tag}
-              className="bg-gray-50 text-gray-600 text-xs px-2 py-1 rounded"
-            >
-              {tag.trim()}
-            </span>
-          ))}
+          </div>
         </div>
-      )}
-    </div>
-  );
-}
+      </div>
+    );
+  }

@@ -1,11 +1,21 @@
 from typing import Dict, Any
 from .es.client import ESClient
 from ..schemas import JobSearchParams, JobBrief, JobSearchResponse, SalaryRange, JobDetail, CompanyBrief, JobSortBy
+import logging
+
 class JobSearchService:
     def __init__(self):
         self.es_client = ESClient()
+        self.logger = logging.getLogger('uvicorn')
     
     def search_jobs(self, params: JobSearchParams) -> JobSearchResponse:
+        # 添加日志打印
+        self.logger.info(f"Search params: {params}")
+        
+        # 校验搜索关键词
+        if not params.q or params.q.strip() == "":
+            raise ValueError("Search keyword cannot be empty")
+        
         # 构建查询
         query = self._build_query(params)
         

@@ -52,10 +52,12 @@ export interface JobDetail extends JobBrief {
 
 export interface SearchParams {
   q?: string;
-  location?: string;
-  employment_type?: string;
-  is_remote?: boolean;
+  employment_types?: string[];
+  experience_levels?: number[];
   company_ids?: string[];
+  sort_by?: number;
+  is_remote?: boolean;
+  location?: string;
   page?: number;
   per_page?: number;
 }

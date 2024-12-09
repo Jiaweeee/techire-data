@@ -15,3 +15,8 @@ export interface SearchResponse {
   page: number;
   perPage: number;
 }
+
+export enum JobSortBy {
+  RELEVANCE = 0,
+  DATE = 1
+}

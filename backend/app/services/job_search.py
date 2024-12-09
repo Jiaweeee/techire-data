@@ -109,6 +109,12 @@ class JobSearchService:
             query["query"]["bool"]["filter"].append({
                 "match": {"location": params.location}
             })
+
+        # 添加远程工作过滤
+        if params.is_remote is not None:
+            query["query"]["bool"]["filter"].append({
+                "term": {"is_remote": params.is_remote}
+            })
         
         # 添加工作类型过滤
         if params.employment_types:
@@ -116,16 +122,16 @@ class JobSearchService:
                 "terms": {"employment_type": params.employment_types}
             })
         
-        # 添加远程工作过滤
-        if params.is_remote is not None:
-            query["query"]["bool"]["filter"].append({
-                "term": {"is_remote": params.is_remote}
-            })
-        
         # 添加公司过滤
         if params.company_ids:
             query["query"]["bool"]["filter"].append({
                 "terms": {"company.id": params.company_ids}
+            })
+        
+        # 添加经验等级过滤
+        if params.experience_levels:
+            query["query"]["bool"]["filter"].append({
+                "terms": {"experience_level": params.experience_levels}
             })
         
         return query

@@ -4,10 +4,11 @@ from .company import CompanyBrief
 
 class JobSearchParams(BaseModel):
     q: Optional[str] = None
-    location: Optional[str] = None
-    employment_types: Optional[List[int]] = None
-    is_remote: Optional[bool] = None
     company_ids: Optional[List[str]] = None
+    employment_types: Optional[List[int]] = None
+    experience_levels: Optional[List[int]] = None
+    location: Optional[str] = None
+    is_remote: Optional[bool] = None
     page: int = 1
     per_page: int = 10
 

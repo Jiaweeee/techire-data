@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from .es.client import ESClient
-from ..schemas import JobSearchParams, JobBrief, JobSearchResponse, SalaryRange, JobDetail, CompanyBrief
+from ..schemas import JobSearchParams, JobBrief, JobSearchResponse, SalaryRange, JobDetail, CompanyBrief, JobSortBy
 class JobSearchService:
     def __init__(self):
         self.es_client = ESClient()
@@ -23,21 +23,18 @@ class JobSearchService:
                     "should": [],
                     "filter": [
                         {"term": {"expired": False}}
-                    ]
+                    ],
+                    "minimum_should_match": 0  # 默认不要求匹配should子句
                 }
             },
             "from": (params.page - 1) * params.per_page,
             "size": params.per_page,
-            "sort": [
-                "_score",
-                {"posted_date": {"order": "desc"}}
-            ]
         }
-        
+
         # 添加文本搜索（带字段权重和模糊匹配）
         if params.q:
             # 主要匹配条件
-            query["query"]["bool"]["must"].append({
+            main_query = {
                 "multi_match": {
                     "query": params.q,
                     "fields": [
@@ -52,8 +49,19 @@ class JobSearchService:
                     "fuzziness": "AUTO",
                     "operator": "or"
                 }
-            })
-            
+            }
+
+            if params.sort_by == JobSortBy.RELEVANCE:
+                # 相关性排序：使用must确保文档必须匹配搜索词
+                query["query"]["bool"]["must"].append(main_query)
+            else:  # JobSortBy.DATE
+                # 日期排序：使用should + minimum_should_match确保基本相关性
+                query["query"]["bool"]["should"].append(main_query)
+                query["query"]["bool"]["minimum_should_match"] = 1  # 至少要匹配一个should子句
+                
+                # 添加最小分数要求
+                query["min_score"] = 1  # 可以根据实际情况调整这个阈值
+                
             # 短语匹配提升分数
             query["query"]["bool"]["should"].extend([
                 {
@@ -104,6 +112,18 @@ class JobSearchService:
                 }
             ])
         
+        # 根据排序方式设置排序规则
+        if params.sort_by == JobSortBy.RELEVANCE:
+            query["sort"] = [
+                "_score",
+                {"posted_date": {"order": "desc"}}
+            ]
+        else:  # JobSortBy.DATE
+            query["sort"] = [
+                {"posted_date": {"order": "desc"}},
+                "_score"
+            ]
+
         # 添加位置过滤
         if params.location:
             query["query"]["bool"]["filter"].append({

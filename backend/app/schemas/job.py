@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from .company import CompanyBrief
+from enum import Enum
+
+class JobSortBy(int, Enum):
+    RELEVANCE = 0
+    DATE = 1
 
 class JobSearchParams(BaseModel):
     q: Optional[str] = None
@@ -9,6 +14,7 @@ class JobSearchParams(BaseModel):
     experience_levels: Optional[List[int]] = None
     location: Optional[str] = None
     is_remote: Optional[bool] = None
+    sort_by: Optional[int] = JobSortBy.RELEVANCE
     page: int = 1
     per_page: int = 10
 

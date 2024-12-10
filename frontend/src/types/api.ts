@@ -1,6 +1,6 @@
 // API Response Types
 import { EmploymentType } from "./employment";
-
+import { SalaryPeriod } from "./salary";
 export interface ValidationError {
   loc: (string | number)[];
   msg: string;
@@ -40,6 +40,7 @@ export interface JobBrief {
     max?: number;
     fixed?: number;
     currency?: string;
+    period?: SalaryPeriod;
   } | null;
   experience_level: number | null;
   skill_tags: string[] | null;

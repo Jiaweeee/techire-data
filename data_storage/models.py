@@ -60,6 +60,13 @@ class ExperienceLevel(IntEnum):
     LEAD = 4
     EXECUTIVE = 5
 
+class SalaryPeriod(IntEnum):
+    HOUR = 1
+    DAY = 2
+    WEEK = 3
+    MONTH = 4
+    YEAR = 5
+
 # define the Job model
 class Job(Base):
     __tablename__ = 'jobs'
@@ -133,3 +140,4 @@ class JobAnalysis(Base):
     skill_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     experience_level: Mapped[Optional[ExperienceLevel]] = mapped_column(Integer, nullable=True)
     summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    salary_period: Mapped[Optional[SalaryPeriod]] = mapped_column(Integer, nullable=True)

@@ -2,7 +2,7 @@ from .base import Processor
 from typing import Dict, Any, Optional
 from openai import OpenAI
 from data_storage.crud import JobAnalysisCRUD
-from data_storage.models import Job, ExperienceLevel
+from data_storage.models import Job, ExperienceLevel, SalaryPeriod
 from dotenv import load_dotenv
 from ratelimit import limits, sleep_and_retry
 import logging
@@ -39,6 +39,7 @@ class InfoExtractingProcessor(Processor):
             "salary_max": number or null,      // Maximum salary amount
             "salary_fixed": number or null,    // Fixed/exact salary amount
             "salary_currency": string or null, // Currency code (e.g., "USD", "EUR", "GBP")
+            "salary_period": string or null,           // One of: "HOUR", "DAY", "WEEK", "MONTH", "YEAR"
             "skill_tags": [                    // List of 3-7 MOST important required skills
                 string,                        // Focus on core technical skills and key technologies
                 ...                           // e.g., ["Python", "AWS", "React"]
@@ -50,6 +51,7 @@ class InfoExtractingProcessor(Processor):
         Guidelines:
         - Extract only numerical values for salary fields
         - Include currency code in standard format (USD, EUR, etc.)
+        - Specify salary period as one of: HOUR, DAY, WEEK, MONTH, YEAR if it exists
         - List ONLY the 3-7 most critical skills or technologies that are essential for the role
         - For skill_tags, prioritize technical skills and core technologies over soft skills
         - Determine experience level based on requirements and responsibilities
@@ -79,13 +81,19 @@ class InfoExtractingProcessor(Processor):
             result = json.loads(response.choices[0].message.content)
             logger.info(f"LLM analysis result: {result}")
             level_str = result.get('experience_level')
+            period_str = result.get('salary_period')
+            
             if level_str:
                 result['experience_level'] = ExperienceLevel[level_str.upper()]
+            if period_str:
+                result['salary_period'] = SalaryPeriod[period_str.upper()]
+                
             return {
                 'salary_min': result.get('salary_min'),
                 'salary_max': result.get('salary_max'),
                 'salary_fixed': result.get('salary_fixed'),
                 'salary_currency': result.get('salary_currency'),
+                'salary_period': result.get('salary_period'),
                 'skill_tags': ', '.join(result.get('skill_tags', [])),
                 'experience_level': result.get('experience_level'),
                 'summary': result.get('summary')

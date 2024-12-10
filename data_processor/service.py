@@ -124,6 +124,7 @@ class JobProcessingService:
         analysis.skill_tags = result.get('skill_tags')
         analysis.experience_level = result.get('experience_level')
         analysis.summary = result.get('summary')
+        analysis.salary_period = result.get('salary_period')
         session.commit()
 
     def _handle_shutdown(self, signum, frame):

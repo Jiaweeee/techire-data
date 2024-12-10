@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { JobBrief } from '../types/api';
 import { MapPin, Building2, Clock, Briefcase, DollarSign } from 'lucide-react';
 import { getExperienceLevelLabel } from '../types/experience';
+import { getSalaryPeriodLabel } from '../types/salary';
 
 interface JobCardProps {
   job: JobBrief;
@@ -13,11 +14,13 @@ export function JobCard({ job }: JobCardProps) {
     
     const formatSalary = () => {
       if (!job.salary_range) return 'Unknown';
-      const { min, max, fixed, currency = 'USD' } = job.salary_range;
-      if (fixed) return `${currency} ${fixed.toLocaleString()}`;
-      if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
-      if (min) return `${currency} ${min.toLocaleString()}+`;
-      if (max) return `Up to ${currency} ${max.toLocaleString()}`;
+      const { min, max, fixed, currency = 'USD', period } = job.salary_range;
+      const periodLabel = getSalaryPeriodLabel(period || null);
+      
+      if (fixed) return `${currency} ${fixed.toLocaleString()}${periodLabel}`;
+      if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}${periodLabel}`;
+      if (min) return `${currency} ${min.toLocaleString()}+${periodLabel}`;
+      if (max) return `Up to ${currency} ${max.toLocaleString()}${periodLabel}`;
       return 'Unknown';
     };
   

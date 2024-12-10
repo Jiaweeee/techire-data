@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { JobBrief } from '../types/api';
 import { MapPin, Building2, Clock, Briefcase } from 'lucide-react';
 import { getExperienceLevelLabel } from '../types/experience';
@@ -9,7 +8,6 @@ interface JobCardProps {
 }
 
 export function JobCard({ job }: JobCardProps) {
-  const navigate = useNavigate();
   const postedDate = job.posted_date ? new Date(job.posted_date) : null;
 
   const formatSalary = () => {
@@ -26,7 +24,7 @@ export function JobCard({ job }: JobCardProps) {
 
   return (
     <div
-      onClick={() => navigate(`/jobs/${job.id}`)}
+      onClick={() => window.open(`/jobs/${job.id}`, '_blank')}
       className="bg-white border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
     >
       <div className="p-6">

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { JobBrief } from '../types/api';
-import { MapPin, Building2, Clock, Briefcase } from 'lucide-react';
+import { MapPin, Building2, Clock, Briefcase, DollarSign } from 'lucide-react';
 import { getExperienceLevelLabel } from '../types/experience';
 import { getSalaryPeriodLabel } from '../types/salary';
 
@@ -8,6 +9,7 @@ interface JobCardProps {
 }
 
 export function JobCard({ job }: JobCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const postedDate = job.posted_date ? new Date(job.posted_date) : null;
 
   const formatSalary = () => {
@@ -20,6 +22,11 @@ export function JobCard({ job }: JobCardProps) {
     if (min) return `${currency} ${min.toLocaleString()}+${periodLabel}`;
     if (max) return `Up to ${currency} ${max.toLocaleString()}${periodLabel}`;
     return null;
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -43,31 +50,49 @@ export function JobCard({ job }: JobCardProps) {
             </div>
           )}
 
-          {/* Title and Company */}
+          {/* Title, Company and Posted Date */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-lg text-gray-900 mb-1 line-clamp-1">
-              {job.title}
-            </h3>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="font-medium text-lg text-gray-900 mb-1 line-clamp-1">
+                {job.title}
+              </h3>
+              <span className="flex items-center gap-1.5 text-sm text-gray-500 flex-shrink-0">
+                <Clock className="w-4 h-4" />
+                <span>
+                  {postedDate 
+                    ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+                        Math.ceil((postedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+                        'day'
+                      )
+                    : 'Recently'}
+                </span>
+              </span>
+            </div>
             <p className="text-gray-600">{job.company.name}</p>
           </div>
-
-          {/* Apply Button */}
-          {job.url && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(job.url, '_blank');
-              }}
-              className="flex-shrink-0 text-sm font-medium text-blue-600 hover:text-blue-800"
-            >
-              Apply
-            </button>
-          )}
         </div>
+
+        {/* Job Summary */}
+        {job.summary && (
+          <div className="mb-4">
+            <p className={`text-sm text-gray-600 ${!isExpanded ? 'line-clamp-1' : ''}`}>
+              {job.summary}
+            </p>
+            <button
+              onClick={handleClick}
+              className="text-sm text-blue-600 hover:text-blue-700 mt-1 font-medium"
+            >
+              {isExpanded ? 'Show less' : 'See more'}
+            </button>
+          </div>
+        )}
+
+        {/* Divider */}
+        <div className="h-px bg-gray-200 mb-4" />
 
         {/* Job Details */}
         <div className="space-y-4">
-          {/* Location and Type */}
+          {/* Location, Experience, Salary */}
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
@@ -78,37 +103,25 @@ export function JobCard({ job }: JobCardProps) {
                 Remote
               </span>
             )}
-          </div>
-
-          {/* Tags */}
-          {(job.experience_level || formatSalary()) && (
-            <div className="flex flex-wrap gap-2">
-              {job.experience_level && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                  <Briefcase className="w-3.5 h-3.5 mr-1" />
+            
+            {job.experience_level && (
+              <>
+                <div className="w-px h-4 bg-gray-200" />
+                <span className="flex items-center gap-1.5">
+                  <Briefcase className="w-4 h-4" />
                   {getExperienceLevelLabel(job.experience_level)}
                 </span>
-              )}
-              {formatSalary() && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                  {formatSalary()}
-                </span>
-              )}
-            </div>
-          )}
+              </>
+            )}
 
-          {/* Posted Date */}
-          {postedDate && (
-            <div className="flex items-center gap-1.5 text-sm text-gray-500">
-              <Clock className="w-4 h-4" />
-              <span>
-                {new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-                  Math.ceil((postedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-                  'day'
-                )}
+            <>
+              <div className="w-px h-4 bg-gray-200" />
+              <span className="flex items-center gap-1.5">
+                <DollarSign className="w-4 h-4" />
+                {formatSalary() || 'Unknown'}
               </span>
-            </div>
-          )}
+            </>
+          </div>
         </div>
       </div>
     </div>

@@ -44,7 +44,7 @@ export function JobList({ jobs, isLoading, hasMore, total, onLoadMore }: JobList
         <JobCard key={job.id} job={job} />
       ))}
       
-      <div className="text-center text-gray-600 pt-6">
+      <div className="text-center text-gray-400 pt-6">
         Showing {jobs.length} out of {total} jobs
       </div>
 
@@ -52,7 +52,7 @@ export function JobList({ jobs, isLoading, hasMore, total, onLoadMore }: JobList
         <div className="text-center pb-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors"
           >
             {isLoading ? 'Loading...' : 'Load More'}
           </button>

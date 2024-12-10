@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { SearchParams } from '../types/api';
+import { SearchParams, CompanyBrief } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
-import { useCompanies } from '../hooks/useCompanies';
+import { searchCompanies } from '../services/api';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface FiltersProps {
   params: SearchParams;
@@ -13,19 +14,30 @@ interface FiltersProps {
 
 export function Filters({ params, onFilterChange, onClear }: FiltersProps) {
   const [companySearch, setCompanySearch] = useState('');
+  const [companies, setCompanies] = useState<CompanyBrief[]>([]);
   const [sections, setSections] = useState({
     companies: true,
     employmentType: true,
     experienceLevel: true,
   });
-
-  const { companies, searchCompanies } = useCompanies();
+  const debouncedSearch = useDebounce(companySearch, 300);
 
   useEffect(() => {
-    if (companySearch) {
-      searchCompanies(companySearch);
+    async function fetchCompanies() {
+      if (debouncedSearch) {
+        try {
+          const data = await searchCompanies(debouncedSearch);
+          setCompanies(data);
+        } catch (error) {
+          console.error('Failed to search companies:', error);
+          setCompanies([]);
+        }
+      } else {
+        setCompanies([]);
+      }
     }
-  }, [companySearch, searchCompanies]);
+    fetchCompanies();
+  }, [debouncedSearch]);
 
   const toggleSection = (section: keyof typeof sections) => {
     setSections(prev => ({

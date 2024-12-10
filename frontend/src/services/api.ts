@@ -1,8 +1,13 @@
-import { SearchParams, SearchResponse, JobDetail } from '../types/api';
+import {
+    SearchParams,
+    SearchResponse,
+    JobDetail,
+    CompanyBrief
+} from '../types/api';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
 
-export async function searchJobs(params: SearchParams): Promise<SearchResponse> {
+export const searchJobs = async (params: SearchParams): Promise<SearchResponse> => {
   const response = await fetch(`${API_BASE_URL}/jobs/search`, {
     method: 'POST',
     headers: {
@@ -28,11 +33,21 @@ export async function searchJobs(params: SearchParams): Promise<SearchResponse> 
   return response.json();
 }
 
-export async function getJobDetail(jobId: string): Promise<JobDetail> {
+export const getJobDetail = async (jobId: string): Promise<JobDetail> => {
   const response = await fetch(`${API_BASE_URL}/jobs/detail?job_id=${jobId}`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch job details');
+  }
+  
+  return response.json();
+}
+
+export const searchCompanies = async (query: string): Promise<CompanyBrief[]> => {
+  const response = await fetch(`${API_BASE_URL}/companies/search?q=${encodeURIComponent(query)}`);
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch companies');
   }
   
   return response.json();

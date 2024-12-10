@@ -4,13 +4,12 @@ import { JobCard } from './JobCard';
 interface JobListProps {
   jobs: JobBrief[];
   isLoading: boolean;
-  total: number;
   searchQuery?: string;
   hasMore: boolean;
   onLoadMore: () => void;
 }
 
-export function JobList({ jobs, isLoading, total, hasMore, onLoadMore }: JobListProps) {
+export function JobList({ jobs, isLoading, hasMore, onLoadMore }: JobListProps) {
   if (isLoading && jobs.length === 0) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

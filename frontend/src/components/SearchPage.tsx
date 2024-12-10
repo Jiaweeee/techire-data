@@ -93,7 +93,6 @@ export function SearchPage() {
           
           <JobList
             jobs={jobs}
-            total={total}
             searchQuery={searchParams.q}
             isLoading={isLoading}
             hasMore={jobs.length < total}

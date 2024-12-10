@@ -2,16 +2,18 @@
 
 # Function to print usage
 print_usage() {
-    echo "Usage: $0 [api|frontend|db|crawl|analysis|migrate [message]|all]"
+    echo "Usage: $0 [api|ui|db|crawl|process|migrate [message]|es [action]]"
     echo "Examples:"
     echo "  $0 api       # Start Backend API service"
-    echo "  $0 ui  # Start Frontend application"
-    echo "  $0 db       # Start Database viewer"
-    echo "  $0 crawl    # Start job data crawler"
-    echo "  $0 process # Start data processing service"
-    echo "  $0 migrate  # Apply existing migrations"
+    echo "  $0 ui        # Start Frontend application"
+    echo "  $0 db        # Start Database viewer"
+    echo "  $0 crawl     # Start job data crawler"
+    echo "  $0 process   # Start data processing service"
+    echo "  $0 migrate   # Apply existing migrations"
     echo "  $0 migrate \"Add user table\" # Generate new migration"
-    echo "  $0 all      # Start all services"
+    echo "  $0 es init   # Initialize Elasticsearch index"
+    echo "  $0 es update # Update index mapping"
+    echo "  $0 es delete # Delete index"
 }
 
 # Check if argument is provided
@@ -68,6 +70,29 @@ start_migrate() {
     fi
 }
 
+# Function to manage Elasticsearch operations
+manage_es() {
+    case "$2" in
+        "init")
+            echo "Initializing Elasticsearch index..."
+            python -m data_processor.scripts.init_es
+            ;;
+        "update")
+            echo "Updating Elasticsearch index mapping..."
+            python -m data_processor.scripts.update_mapping
+            ;;
+        "delete")
+            echo "Deleting Elasticsearch index..."
+            python -m data_processor.scripts.delete_index
+            ;;
+        *)
+            echo "Error: Invalid ES action: $2"
+            echo "Available actions: init, update, delete"
+            exit 1
+            ;;
+    esac
+}
+
 # Process arguments
 case "$1" in
     "api")
@@ -88,16 +113,8 @@ case "$1" in
     "migrate")
         start_migrate "$1" "$2"
         ;;
-    "all")
-        echo "Error: Cannot start all services in the current terminal."
-        echo "Please start each service in a separate terminal:"
-        echo "./local_dev.sh api"
-        echo "./local_dev.sh ui"
-        echo "./local_dev.sh db"
-        echo "./local_dev.sh crawl"
-        echo "./local_dev.sh process"
-        echo "./local_dev.sh migrate"
-        exit 1
+    "es")
+        manage_es "$1" "$2"
         ;;
     *)
         echo "Error: Invalid service name: $1"

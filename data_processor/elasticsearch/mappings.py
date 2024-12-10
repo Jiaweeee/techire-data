@@ -49,7 +49,8 @@ JOB_MAPPING = {
                     "min": {"type": "integer"},
                     "max": {"type": "integer"},
                     "fixed": {"type": "integer"},
-                    "currency": {"type": "keyword"}
+                    "currency": {"type": "keyword"},
+                    "period": {"type": "integer"}
                 }
             },
             "experience_level": {"type": "integer"}

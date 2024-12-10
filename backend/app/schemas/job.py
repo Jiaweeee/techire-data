@@ -23,6 +23,7 @@ class SalaryRange(BaseModel):
     max: Optional[float] = None
     fixed: Optional[float] = None
     currency: Optional[str] = None
+    period: Optional[int] = None
 
 class JobBrief(BaseModel):
     id: str

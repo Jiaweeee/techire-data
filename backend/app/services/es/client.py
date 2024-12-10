@@ -16,7 +16,10 @@ class ESClient:
     def create_index(self, index_name: str, mapping: dict):
         """创建索引"""
         if not self.client.indices.exists(index=index_name):
-            return self.client.indices.create(index=index_name, body=mapping)
+            return self.client.indices.create(
+                index=index_name,
+                body=mapping
+            )
     
     def search(self, query: Dict[str, Any]) -> Dict[str, Any]:
         """执行搜索"""
@@ -46,23 +49,31 @@ class ESClient:
     
     def reindex(self, source_index: str, target_index: str):
         """重新索引数据"""
-        return self.client.reindex({
-            "source": {"index": source_index},
-            "dest": {"index": target_index}
-        }, wait_for_completion=True)
+        return self.client.reindex(
+            body={
+                "source": {"index": source_index},
+                "dest": {"index": target_index}
+            },
+            wait_for_completion=True
+        )
     
     def create_alias(self, index: str, alias: str):
         """创建索引别名"""
-        return self.client.indices.put_alias(index=index, name=alias)
+        return self.client.indices.put_alias(
+            index=index,
+            name=alias
+        )
     
     def update_alias(self, old_index: str, new_index: str, alias: str):
         """更新索引别名"""
-        return self.client.indices.update_aliases({
-            "actions": [
-                {"remove": {"index": old_index, "alias": alias}},
-                {"add": {"index": new_index, "alias": alias}}
-            ]
-        })
+        return self.client.indices.update_aliases(
+            body={
+                "actions": [
+                    {"remove": {"index": old_index, "alias": alias}},
+                    {"add": {"index": new_index, "alias": alias}}
+                ]
+            }
+        )
     
     def delete_index(self, index: str):
         """删除索引"""

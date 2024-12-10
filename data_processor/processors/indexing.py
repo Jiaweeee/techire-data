@@ -45,7 +45,8 @@ class DataIndexingProcessor(Processor):
                     "min": analysis.salary_min,
                     "max": analysis.salary_max,
                     "fixed": analysis.salary_fixed,
-                    "currency": analysis.salary_currency
+                    "currency": analysis.salary_currency,
+                    "period": analysis.salary_period
                 }
             }
             

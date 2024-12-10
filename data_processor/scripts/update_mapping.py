@@ -21,13 +21,13 @@ def update_mapping():
         print("Reindexing data...")
         es_client.reindex(old_index, new_index)
         
-        # 4. 更新别名
-        print("Updating alias...")
-        es_client.update_alias(old_index, new_index, settings.ES_JOB_INDEX)
-        
-        # 5. 删除旧索引
+        # 4. 删除旧索引（在更新别名之前）
         print("Deleting old index...")
         es_client.delete_index(old_index)
+        
+        # 5. 创建新的别名
+        print("Creating alias...")
+        es_client.create_alias(new_index, settings.ES_JOB_INDEX)
         
         print("Mapping update completed successfully!")
         

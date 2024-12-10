@@ -182,7 +182,8 @@ class JobSearchService:
                     min=salary_range.get("min"),
                     max=salary_range.get("max"),
                     fixed=salary_range.get("fixed"),
-                    currency=salary_range.get("currency")
+                    currency=salary_range.get("currency"),
+                    period=salary_range.get("period")
                 )
             
             # 构建公司信息

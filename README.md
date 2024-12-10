@@ -71,6 +71,11 @@ Use the `local_dev.sh` script to start individual services. Open a separate term
 
 # Generate a new migration with a message
 ./local_dev.sh migrate "Add user table"
+
+# Elasticsearch operations
+./local_dev.sh es init    # Initialize Elasticsearch index
+./local_dev.sh es update  # Update index mapping
+./local_dev.sh es delete  # Delete index
 ```
 
 Make the script executable if needed:

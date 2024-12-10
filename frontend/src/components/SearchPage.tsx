@@ -1,21 +1,22 @@
 import { useState, useCallback } from 'react';
 import { SearchBar } from './SearchBar';
 import { JobList } from './JobList';
-import { Filters } from './Filters';
+import { Filters, FilterTag } from './Filters';
 import { JobBrief, SearchParams } from '../types/api';
 import { searchJobs } from '../services/api';
 import { JobSortBy } from '../types/job';
+import { ChevronDown } from 'lucide-react';
 
 export function SearchPage() {
   const [jobs, setJobs] = useState<JobBrief[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
   const [searchParams, setSearchParams] = useState<SearchParams>({
     page: 1,
-    per_page: 10, // Changed to 9 for 3x3 grid
+    per_page: 10,
     sort_by: JobSortBy.RELEVANCE
   });
+  const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
 
   const handleSearch = useCallback(async (newParams: Partial<SearchParams>) => {
     setIsLoading(true);
@@ -26,7 +27,6 @@ export function SearchPage() {
         setJobs([]);
       }
       const response = await searchJobs(updatedParams);
-      setHasSearched(true);
       if (newParams.page === 1) {
         setJobs(response.results);
       } else {
@@ -60,44 +60,109 @@ export function SearchPage() {
     });
   };
 
+  const handleRemoveTag = (tag: FilterTag) => {
+    switch (tag.type) {
+      case 'company':
+        handleSearch({ 
+          company_ids: searchParams.company_ids?.filter(id => id !== tag.value), 
+          page: 1
+        });
+        break;
+      case 'employment':
+        handleSearch({ 
+          employment_types: searchParams.employment_types?.filter(type => type !== tag.value),
+          page: 1
+        });
+        break;
+      case 'experience':
+        handleSearch({ 
+          experience_levels: searchParams.experience_levels?.filter(level => level !== tag.value),
+          page: 1
+        });
+        break;
+    }
+  };
+
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Find Your Next Opportunity</h1>
-        <p className="text-gray-600">Search through millions of jobs from top companies</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Search Container */}
+      <div>
+        <div className="max-w-5xl mx-auto px-4 py-8">
+          <SearchBar
+            initialQuery={searchParams.q}
+            onSearch={(query) => handleSearch({ q: query, page: 1 })}
+          />
+        </div>
       </div>
 
-      <div className="flex gap-8">
-        {/* Filters Section */}
-        <div className="w-[280px] flex-shrink-0">
-          <div className="sticky top-4">
+      {/* Main Content */}
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="flex gap-12">
+          {/* Filters */}
+          <div className="w-64 flex-shrink-0">
             <Filters
               params={searchParams}
               onFilterChange={(newParams) => handleSearch({ ...newParams, page: 1 })}
-              onClear={handleClearFilters}
+              onTagsChange={setFilterTags}
             />
           </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          <SearchBar
-            initialQuery={searchParams.q}
-            sortBy={searchParams.sort_by}
-            total={total}
-            hasSearched={hasSearched}
-            onSearch={(query) => handleSearch({ q: query, page: 1 })}
-            onSortChange={(sort_by) => handleSearch({ sort_by, page: 1 })}
-          />
-          
-          <JobList
-            jobs={jobs}
-            searchQuery={searchParams.q}
-            isLoading={isLoading}
-            hasMore={jobs.length < total}
-            onLoadMore={handleLoadMore}
-          />
+          {/* Results */}
+          <div className="flex-1">
+            {/* Selected Filters */}
+            {filterTags.length > 0 && (
+                <div className="mb-4 flex flex-wrap gap-2">
+                {filterTags.map(tag => (
+                    <span 
+                    key={tag.id}
+                    className="inline-flex items-center bg-gray-100 text-gray-700 text-sm rounded-full px-3 py-1"
+                    >
+                    {tag.label}
+                    <button 
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                        ×
+                    </button>
+                    </span>
+                ))}
+                </div>
+            )}
+            {/* Results Header */}
+            <div className="mb-4 flex items-center justify-between">
+                <div className="relative">
+                    <select
+                        value={searchParams.sort_by}
+                        onChange={(e) => handleSearch({ sort_by: Number(e.target.value), page: 1 })}
+                        className="appearance-none bg-white border rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    >
+                        <option value={JobSortBy.RELEVANCE}>Relevance</option>
+                        <option value={JobSortBy.DATE}>Newest</option>
+                    </select>
+                    {/* Add dropdown arrow */}
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <ChevronDown className="h-4 w-4" />
+                </div>
+            </div>
+            
+            <button
+                onClick={handleClearFilters}
+                className="text-sm text-gray-500 hover:bg-gray-100 rounded-md px-3 py-1.5"
+            >
+                Clear Filters
+            </button>
+            </div>
+            
+
+            {/* Job List */}
+            <JobList
+              jobs={jobs}
+              isLoading={isLoading}
+              hasMore={jobs.length < total}
+              total={total}
+              onLoadMore={handleLoadMore}
+            />
+          </div>
         </div>
       </div>
     </div>

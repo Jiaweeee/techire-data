@@ -52,3 +52,11 @@ export const searchCompanies = async (query: string): Promise<CompanyBrief[]> =>
   
   return response.json();
 }
+
+export async function getCompanies(): Promise<CompanyBrief[]> {
+  const response = await fetch(`${API_BASE_URL}/companies/list`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch companies');
+  }
+  return response.json();
+}

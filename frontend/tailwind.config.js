@@ -18,7 +18,10 @@ export default {
             },
           }
         }
-      }
+      },
+      maxWidth: {
+        '7xl': '80rem',
+      },
     },
   },
   plugins: [

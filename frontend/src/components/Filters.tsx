@@ -1,30 +1,45 @@
-import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Search } from 'lucide-react';
 import { SearchParams, CompanyBrief } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
-import { searchCompanies } from '../services/api';
+import { searchCompanies, getCompanies } from '../services/api';
 import { useDebounce } from '../hooks/useDebounce';
+
+export interface FilterTag {
+    id: string;
+    label: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any;
+    type: 'company' | 'employment' | 'experience';
+}
 
 interface FiltersProps {
   params: SearchParams;
   onFilterChange: (params: Partial<SearchParams>) => void;
-  onClear: () => void;
+  onTagsChange: (tags: FilterTag[]) => void;
 }
 
-export function Filters({ params, onFilterChange, onClear }: FiltersProps) {
+export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) {
   const [companySearch, setCompanySearch] = useState('');
   const [companies, setCompanies] = useState<CompanyBrief[]>([]);
-  const [sections, setSections] = useState({
-    companies: true,
-    employmentType: true,
-    experienceLevel: true,
-  });
+  const [showAllEmploymentTypes, setShowAllEmploymentTypes] = useState(false);
+  const [showAllExperienceLevels, setShowAllExperienceLevels] = useState(false);
+  const [isCompanyListOpen, setIsCompanyListOpen] = useState(false);
   const debouncedSearch = useDebounce(companySearch, 300);
+  const companyDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchCompanies() {
-      if (debouncedSearch) {
+      if (!debouncedSearch && isCompanyListOpen) {
+        try {
+          const data = await getCompanies();
+          setCompanies(data);
+        } catch (error) {
+          console.error('Failed to fetch companies:', error);
+          setCompanies([]);
+        }
+      } else if (debouncedSearch) {
         try {
           const data = await searchCompanies(debouncedSearch);
           setCompanies(data);
@@ -32,148 +47,157 @@ export function Filters({ params, onFilterChange, onClear }: FiltersProps) {
           console.error('Failed to search companies:', error);
           setCompanies([]);
         }
-      } else {
-        setCompanies([]);
       }
     }
     fetchCompanies();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, isCompanyListOpen]);
 
-  const toggleSection = (section: keyof typeof sections) => {
-    setSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
+  useEffect(() => {
+    const tags: FilterTag[] = [
+      // Company tags
+      ...(params.company_ids?.map(id => {
+        const company = companies.find(c => c.id === id);
+        return {
+          id: `company-${id}`,
+          label: company?.name || `Company ${id}`,
+          value: id,
+          type: 'company' as const
+        };
+      }) || []),
+      // Employment type tags
+      ...(params.employment_types?.map(type => ({
+        id: `employment-${type}`,
+        label: getEmploymentTypeLabel(type),
+        value: type,
+        type: 'employment' as const
+      })) || []),
+      // Experience level tags
+      ...(params.experience_levels?.map(level => ({
+        id: `experience-${level}`,
+        label: getExperienceLevelLabel(level),
+        value: level,
+        type: 'experience' as const
+      })) || [])
+    ];
+    
+    onTagsChange(tags);
+  }, [params, companies, onTagsChange]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (companyDropdownRef.current && !companyDropdownRef.current.contains(event.target as Node)) {
+        setIsCompanyListOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-6 space-y-6">
-      {/* Title and Clear button */}
+    <div className="space-y-6">
+      {/* Title */}
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Filters</h2>
-        <button
-          onClick={onClear}
-          className="text-sm text-blue-600 hover:text-blue-800"
-        >
-          Clear
-        </button>
+        <span className="font-medium text-gray-900">Filter by</span>
       </div>
-
-      {/* Divider */}
-      <div className="border-t"></div>
 
       {/* Companies Filter */}
-      <div>
-        <button
-          onClick={() => toggleSection('companies')}
-          className="flex justify-between items-center w-full mb-4"
-        >
-          <h3 className="font-medium">Companies</h3>
-          {sections.companies ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </button>
-        
-        {sections.companies && (
-          <div className="space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={companySearch}
-                onChange={(e) => setCompanySearch(e.target.value)}
-                placeholder="Search companies..."
-                className="w-full px-4 py-2 border rounded-lg pr-10"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            </div>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {companies.map(company => (
-                <label key={company.id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={params.company_ids?.includes(company.id)}
-                    onChange={(e) => {
-                      const newCompanyIds = e.target.checked
-                        ? [...(params.company_ids || []), company.id]
-                        : (params.company_ids || []).filter(id => id !== company.id);
-                      onFilterChange({ company_ids: newCompanyIds });
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Companies</h3>
+        <div className="space-y-2">
+          <div className="relative" ref={companyDropdownRef}>
+            <input
+              type="text"
+              value={companySearch}
+              onChange={(e) => setCompanySearch(e.target.value)}
+              onFocus={() => setIsCompanyListOpen(true)}
+              placeholder="Search companies..."
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+            />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            
+            {/* Company List Dropdown */}
+            {isCompanyListOpen && companies.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {companies.map(company => (
+                  <div
+                    key={company.id}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                    onClick={() => {
+                        if (!params.company_ids?.includes(company.id)) {
+                            const newCompanyIds = [...(params.company_ids || []), company.id];
+                            onFilterChange({ company_ids: newCompanyIds });
+                        }
+                        setIsCompanyListOpen(false)
                     }}
-                    className="rounded border-gray-300"
-                  />
-                  {company.name}
-                </label>
-              ))}
-            </div>
+                  >
+                    <span className="text-sm text-gray-700">{company.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-
-      {/* Dividers between sections */}
-      <div className="border-t"></div>
 
       {/* Employment Type Filter */}
-      <div>
-        <button
-          onClick={() => toggleSection('employmentType')}
-          className="flex justify-between items-center w-full mb-4"
-        >
-          <h3 className="font-medium">Employment Type</h3>
-          {sections.employmentType ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </button>
-        
-        {sections.employmentType && (
-          <div className="space-y-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(type => (
-              <label key={type} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={params.employment_types?.includes(type)}
-                  onChange={(e) => {
-                    const newTypes = e.target.checked
-                      ? [...(params.employment_types || []), type]
-                      : (params.employment_types || []).filter(t => t !== type);
-                    onFilterChange({ employment_types: newTypes });
-                  }}
-                  className="rounded border-gray-300"
-                />
-                {getEmploymentTypeLabel(type)}
-              </label>
-            ))}
-          </div>
-        )}
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Employment Type</h3>
+        <div className="space-y-3">
+          {(showAllEmploymentTypes ? [1, 2, 3, 4, 5, 6, 7, 8] : [1, 2, 3]).map(type => (
+            <label key={type} className="flex items-center gap-2 text-base text-gray-500">
+              <input
+                type="checkbox"
+                checked={params.employment_types?.includes(type)}
+                onChange={(e) => {
+                  const newTypes = e.target.checked
+                    ? [...(params.employment_types || []), type]
+                    : (params.employment_types || []).filter(t => t !== type);
+                  onFilterChange({ employment_types: newTypes });
+                }}
+                className="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500"
+              />
+              {getEmploymentTypeLabel(type)}
+            </label>
+          ))}
+          <button
+            onClick={() => setShowAllEmploymentTypes(!showAllEmploymentTypes)}
+            className="text-base text-blue-600 hover:text-blue-800"
+          >
+            {showAllEmploymentTypes ? 'See less' : 'See more'}
+          </button>
+        </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-t"></div>
-
       {/* Experience Level Filter */}
-      <div>
-        <button
-          onClick={() => toggleSection('experienceLevel')}
-          className="flex justify-between items-center w-full mb-4"
-        >
-          <h3 className="font-medium">Experience Level</h3>
-          {sections.experienceLevel ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </button>
-        
-        {sections.experienceLevel && (
-          <div className="space-y-2">
-            {[1, 2, 3, 4, 5].map(level => (
-              <label key={level} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={params.experience_levels?.includes(level)}
-                  onChange={(e) => {
-                    const newLevels = e.target.checked
-                      ? [...(params.experience_levels || []), level]
-                      : (params.experience_levels || []).filter(l => l !== level);
-                    onFilterChange({ experience_levels: newLevels });
-                  }}
-                  className="rounded border-gray-300"
-                />
-                {getExperienceLevelLabel(level)}
-              </label>
-            ))}
-          </div>
-        )}
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Experience Level</h3>
+        <div className="space-y-3">
+          {(showAllExperienceLevels ? [1, 2, 3, 4, 5] : [1, 2, 3]).map(level => (
+            <label key={level} className="flex items-center gap-2 text-base text-gray-500">
+              <input
+                type="checkbox"
+                checked={params.experience_levels?.includes(level)}
+                onChange={(e) => {
+                  const newLevels = e.target.checked
+                    ? [...(params.experience_levels || []), level]
+                    : (params.experience_levels || []).filter(l => l !== level);
+                  onFilterChange({ experience_levels: newLevels });
+                }}
+                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              {getExperienceLevelLabel(level)}
+            </label>
+          ))}
+          <button
+            onClick={() => setShowAllExperienceLevels(!showAllExperienceLevels)}
+            className="text-base text-blue-600 hover:text-blue-800"
+          >
+            {showAllExperienceLevels ? 'See less' : 'See more'}
+          </button>
+        </div>
       </div>
     </div>
   );

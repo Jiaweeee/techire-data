@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Building2, MapPin, Globe, ExternalLink } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Building2, MapPin, Briefcase, DollarSign, Clock } from 'lucide-react';
 import { getJobDetail } from '../services/api';
 import type { JobDetail } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
+import { getSalaryPeriodLabel } from '../types/salary';
+
 export function JobDetailPage() {
   const { jobId } = useParams();
-  const navigate = useNavigate();
   const [job, setJob] = useState<JobDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -17,6 +18,7 @@ export function JobDetailPage() {
       try {
         const jobData = await getJobDetail(jobId);
         setJob(jobData);
+        document.title = `${jobData.title} at ${jobData.company.name}`;
       } catch (error) {
         console.error('Failed to load job:', error);
       } finally {
@@ -45,116 +47,115 @@ export function JobDetailPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to search
-      </button>
-
-      <div className="bg-white rounded-lg shadow-sm border p-8">
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex gap-4 flex-1 min-w-0">
-            <div className="flex-shrink-0">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column - Job Details */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Header Section */}
+          <div className="space-y-4">
+            {/* Company Info */}
+            <div className="flex items-center gap-2">
               {job.company.icon_url ? (
                 <img
                   src={job.company.icon_url}
                   alt={job.company.name}
-                  className="w-16 h-16 rounded-lg object-cover"
+                  className="w-10 h-10 rounded object-contain border border-gray-100 bg-white flex-shrink-0"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-gray-400" />
+                <div className="w-10 h-10 rounded bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+                  <Building2 className="w-5 h-5 text-gray-400" />
                 </div>
               )}
+              <span className="text-gray-500 font-medium">{job.company.name}</span>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold mb-2 line-clamp-2">{job.title}</h1>
-              <div className="flex items-center gap-4 text-gray-600">
-                <span className="flex items-center gap-1">
-                  <Building2 className="w-4 h-4" />
-                  {job.company.name}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  {job.location}
-                </span>
+
+            {/* Job Title */}
+            <h1 className="font-medium text-2xl text-gray-900">{job.title}</h1>
+          </div>
+
+          {/* Job Details Card */}
+          <div className="space-y-4 bg-white rounded-lg border p-4">
+            <div className="flex flex-col gap-4 text-sm text-gray-500">
+              <span className="flex items-center gap-1.5">
+                <MapPin className="w-4 h-4" />
+                {job.location}
                 {job.is_remote && (
-                  <span className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                    <Globe className="w-4 h-4" />
+                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                     Remote
                   </span>
                 )}
-              </div>
+              </span>
+              
+              {job.employment_type && (
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" />
+                  {getEmploymentTypeLabel(job.employment_type)}
+                </span>
+              )}
+              
+              {job.experience_level && (
+                <span className="flex items-center gap-1.5">
+                  <Briefcase className="w-4 h-4" />
+                  {getExperienceLevelLabel(job.experience_level)}
+                </span>
+              )}
+
+              {job.salary_range && (
+                <span className="flex items-center gap-1.5">
+                  <DollarSign className="w-4 h-4" />
+                  {(() => {
+                    const { min, max, fixed, currency = 'USD', period } = job.salary_range;
+                    const periodLabel = getSalaryPeriodLabel(period || null);
+                    if (fixed) return `${currency} ${fixed.toLocaleString()}${periodLabel}`;
+                    if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}${periodLabel}`;
+                    if (min) return `${currency} ${min.toLocaleString()}+${periodLabel}`;
+                    if (max) return `Up to ${currency} ${max.toLocaleString()}${periodLabel}`;
+                    return 'Not specified';
+                  })()}
+                </span>
+              )}
             </div>
           </div>
-          
+
+          {/* Skills Section */}
+          {job.skill_tags && job.skill_tags.length > 0 && (
+            <div className="bg-white rounded-lg border p-4">
+              <h2 className="text-sm font-medium text-gray-900 mb-3">Required Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {job.skill_tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
+                  >
+                    {tag.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Apply Button */}
           <a
             href={job.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex-shrink-0 ml-4"
+            className="block w-full text-center px-6 py-3 bg-blue-600 text-white font-medium rounded-full 
+              hover:bg-blue-700 transition-colors duration-200"
           >
             Apply Now
-            <ExternalLink className="w-4 h-4" />
           </a>
         </div>
 
-        <div className="flex gap-4 mb-8">
-          {job.salary_range && (
-            <div className="bg-gray-100 px-4 py-2 rounded-lg">
-              <span className="text-gray-600">Salary</span>
-              <p className="font-medium">
-                {(() => {
-                  const { min, max, fixed, currency = 'USD' } = job.salary_range;
-                  if (fixed) return `${currency} ${fixed.toLocaleString()}`;
-                  if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
-                  if (min) return `${currency} ${min.toLocaleString()}+`;
-                  if (max) return `Up to ${currency} ${max.toLocaleString()}`;
-                  return 'Not specified';
-                })()}
-              </p>
-            </div>
-          )}
-          {job.employment_type && (
-            <div className="bg-gray-100 px-4 py-2 rounded-lg">
-              <span className="text-gray-600">Employment Type</span>
-              <p className="font-medium">{getEmploymentTypeLabel(job.employment_type)}</p>
-            </div>
-          )}
-          {job.experience_level && (
-            <div className="bg-gray-100 px-4 py-2 rounded-lg">
-              <span className="text-gray-600">Experience Level</span>
-              <p className="font-medium">{getExperienceLevelLabel(job.experience_level)}</p>
-            </div>
-          )}
-        </div>
-
-        {job.skill_tags && job.skill_tags.length > 0 && (
-          <div className="mt-8 pt-8 border-t">
-            <h2 className="text-lg font-semibold mb-4">Required Skills</h2>
-            <div className="flex flex-wrap gap-2">
-              {job.skill_tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full"
-                >
-                  {tag.trim()}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="prose-gray max-w-none">
-          <div 
-            dangerouslySetInnerHTML={{
+        {/* Right Column - Job Description */}
+        <div className="lg:col-span-8">
+          <div className="bg-white rounded-lg border p-6">
+            <div 
+              dangerouslySetInnerHTML={{
                 __html: job.full_description
-            }}
-            className="job-section"
-          />
+              }}
+              className="prose prose-gray max-w-none job-section"
+            />
+          </div>
         </div>
       </div>
     </div>

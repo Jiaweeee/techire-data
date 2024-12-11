@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { JobBrief } from '../types/api';
 import { MapPin, Building2, Clock, Briefcase, DollarSign } from 'lucide-react';
 import { getExperienceLevelLabel } from '../types/experience';
-import { getSalaryPeriodLabel } from '../types/salary';
+import { formatSalary } from '../utils/salary';
 
 interface JobCardProps {
   job: JobBrief;
@@ -11,18 +11,6 @@ interface JobCardProps {
 export function JobCard({ job }: JobCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const postedDate = job.posted_date ? new Date(job.posted_date) : null;
-
-  const formatSalary = () => {
-    if (!job.salary_range) return null;
-    const { min, max, fixed, currency = 'USD', period } = job.salary_range;
-    const periodLabel = getSalaryPeriodLabel(period || null);
-    
-    if (fixed) return `${currency} ${fixed.toLocaleString()}${periodLabel}`;
-    if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}${periodLabel}`;
-    if (min) return `${currency} ${min.toLocaleString()}+${periodLabel}`;
-    if (max) return `Up to ${currency} ${max.toLocaleString()}${periodLabel}`;
-    return null;
-  };
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -118,7 +106,7 @@ export function JobCard({ job }: JobCardProps) {
               <div className="w-px h-4 bg-gray-200" />
               <span className="flex items-center gap-1.5">
                 <DollarSign className="w-4 h-4" />
-                {formatSalary() || 'Unknown'}
+                {formatSalary(job.salary_range)}
               </span>
             </>
           </div>

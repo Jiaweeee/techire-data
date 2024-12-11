@@ -5,7 +5,7 @@ import { getJobDetail } from '../services/api';
 import type { JobDetail } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
-import { getSalaryPeriodLabel } from '../types/salary';
+import { formatSalary } from '../utils/salary';
 
 export function JobDetailPage() {
   const { jobId } = useParams();
@@ -103,15 +103,7 @@ export function JobDetailPage() {
               {job.salary_range && (
                 <span className="flex items-center gap-1.5">
                   <DollarSign className="w-4 h-4" />
-                  {(() => {
-                    const { min, max, fixed, currency = 'USD', period } = job.salary_range;
-                    const periodLabel = getSalaryPeriodLabel(period || null);
-                    if (fixed) return `${currency} ${fixed.toLocaleString()}${periodLabel}`;
-                    if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}${periodLabel}`;
-                    if (min) return `${currency} ${min.toLocaleString()}+${periodLabel}`;
-                    if (max) return `Up to ${currency} ${max.toLocaleString()}${periodLabel}`;
-                    return 'Not specified';
-                  })()}
+                  {formatSalary(job.salary_range)}
                 </span>
               )}
             </div>

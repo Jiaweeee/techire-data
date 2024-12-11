@@ -1,6 +1,7 @@
 // API Response Types
 import { EmploymentType } from "./employment";
 import { SalaryPeriod } from "./salary";
+
 export interface ValidationError {
   loc: (string | number)[];
   msg: string;
@@ -26,6 +27,14 @@ export interface CompanyDetail extends CompanyBrief {
   headquarters: string | null;
 }
 
+export interface SalaryRange {
+  min?: number;
+  max?: number;
+  fixed?: number;
+  currency?: string;
+  period?: SalaryPeriod;
+}
+
 export interface JobBrief {
   id: string;
   url: string;
@@ -35,13 +44,7 @@ export interface JobBrief {
   employment_type: EmploymentType | null;
   posted_date: string | null;
   is_remote: boolean | null;
-  salary_range: {
-    min?: number;
-    max?: number;
-    fixed?: number;
-    currency?: string;
-    period?: SalaryPeriod;
-  } | null;
+  salary_range: SalaryRange | null;
   experience_level: number | null;
   skill_tags: string[] | null;
   summary: string | null;

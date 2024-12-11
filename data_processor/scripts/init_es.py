@@ -3,7 +3,7 @@ from data_processor.elasticsearch.mappings import JOB_MAPPING
 from backend.app.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from data_storage.models import Job
+from data_storage.models import Job, JobAnalysis
 from data_storage.config import get_database_url
 from datetime import datetime
 
@@ -38,7 +38,9 @@ def init_elasticsearch(batch_size=1000):
         while True:
             # 分批查询数据
             jobs = (db.query(Job)
+                   .join(JobAnalysis, Job.id == JobAnalysis.job_id)
                    .filter(Job.expired == False)
+                   .filter(JobAnalysis.status == 'completed')
                    .order_by(Job.id)
                    .limit(batch_size)
                    .offset(offset)
@@ -66,23 +68,18 @@ def init_elasticsearch(batch_size=1000):
                     "employment_type": job.employment_type,
                     "posted_date": format_date(job.posted_date),
                     "is_remote": job.is_remote,
-                    "expired": job.expired
+                    "expired": job.expired,
+                    "skill_tags": job.analysis.skill_tags.split(',') if job.analysis.skill_tags else [],
+                    "summary": job.analysis.summary,
+                    "experience_level": job.analysis.experience_level if job.analysis.experience_level else None,
+                    "salary_range": {
+                        "min": job.analysis.salary_min,
+                        "max": job.analysis.salary_max,
+                        "fixed": job.analysis.salary_fixed,
+                        "currency": job.analysis.salary_currency,
+                        "period": job.analysis.salary_period
+                    }
                 }
-                
-                # 添加分析数据
-                if job.analysis:
-                    doc.update({
-                        "skill_tags": job.analysis.skill_tags.split(',') if job.analysis.skill_tags else [],
-                        "summary": job.analysis.summary,
-                        "experience_level": job.analysis.experience_level if job.analysis.experience_level else None,
-                        "salary_range": {
-                            "min": job.analysis.salary_min,
-                            "max": job.analysis.salary_max,
-                            "fixed": job.analysis.salary_fixed,
-                            "currency": job.analysis.salary_currency,
-                            "period": job.analysis.salary_period
-                        }
-                    })
                 
                 es_client.index_document(job.id, doc, index=index_name)
             

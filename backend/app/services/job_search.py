@@ -25,6 +25,39 @@ class JobSearchService:
         # 处理结果
         return self._process_results(results, params)
 
+    def get_job_detail(self, job_id: str) -> JobDetail:
+        query = {
+            "query": {
+                "term": {
+                    "_id": job_id
+                }
+            }
+        }
+        
+        result = self.es_client.search(query)
+        
+        hits = result.get("hits", {}).get("hits", [])
+        if not hits:
+            raise ValueError(f"Job with id {job_id} not found")
+            
+        source = hits[0].get("_source", {})
+        
+        return JobDetail(
+            id=source.get("id"),
+            title=source.get("title"),
+            company=self._build_company_brief(source.get("company")),
+            location=source.get("location"),
+            employment_type=source.get("employment_type"),
+            posted_date=source.get("posted_date"),
+            is_remote=source.get("is_remote", False),
+            url=source.get("url"),
+            skill_tags=source.get("skill_tags", []),
+            summary=source.get("summary"),
+            salary_range=self._build_salary_range(source.get("salary_range")),
+            experience_level=source.get("experience_level"),
+            full_description=source.get("full_description"),
+        ) 
+
     def _build_query(self, params: JobSearchParams) -> Dict[str, Any]:
         query = {
             "query": {
@@ -166,6 +199,28 @@ class JobSearchService:
         
         return query
     
+    def _build_company_brief(self, company_data: dict) -> CompanyBrief:
+        """构建公司简要信息"""
+        if not company_data:
+            return None
+        return CompanyBrief(
+            id=company_data.get("id"),
+            name=company_data.get("name"),
+            icon_url=company_data.get("icon_url")
+        )
+
+    def _build_salary_range(self, salary_data: dict) -> SalaryRange:
+        """构建薪资范围信息"""
+        if not salary_data:
+            return None
+        return SalaryRange(
+            min=salary_data.get("min"),
+            max=salary_data.get("max"),
+            fixed=salary_data.get("fixed"),
+            currency=salary_data.get("currency"),
+            period=salary_data.get("period")
+        )
+
     def _process_results(self, results: dict, params: JobSearchParams) -> JobSearchResponse:
         hits = results.get("hits", {})
         total = hits.get("total", {}).get("value", 0)
@@ -175,30 +230,10 @@ class JobSearchService:
             source = hit.get("_source", {})
             score = hit.get("_score", 0.0)
             
-            # 获取薪资范围
-            salary_range = source.get("salary_range", {})
-            if salary_range:
-                salary_range = SalaryRange(
-                    min=salary_range.get("min"),
-                    max=salary_range.get("max"),
-                    fixed=salary_range.get("fixed"),
-                    currency=salary_range.get("currency"),
-                    period=salary_range.get("period")
-                )
-            
-            # 构建公司信息
-            company = source.get("company", {})
-            if company:
-                company = CompanyBrief(
-                    id=company.get("id"),
-                    name=company.get("name"),
-                    icon_url=company.get("icon_url")
-                )
-            
             result = JobBrief(
                 id=source.get("id"),
                 title=source.get("title"),
-                company=company,
+                company=self._build_company_brief(source.get("company")),
                 location=source.get("location"),
                 employment_type=source.get("employment_type"),
                 posted_date=source.get("posted_date"),
@@ -206,7 +241,7 @@ class JobSearchService:
                 url=source.get("url"),
                 skill_tags=source.get("skill_tags", []),
                 summary=source.get("summary"),
-                salary_range=salary_range,
+                salary_range=self._build_salary_range(source.get("salary_range")),
                 experience_level=source.get("experience_level"),
                 expired=source.get("expired", False),
                 score=score
@@ -219,59 +254,3 @@ class JobSearchService:
             page=params.page,
             per_page=params.per_page
         )
-
-    def get_job_detail(self, job_id: str) -> JobDetail:
-        # 构建查询
-        query = {
-            "query": {
-                "term": {
-                    "_id": job_id
-                }
-            }
-        }
-        
-        # 执行搜索
-        result = self.es_client.search(query)
-        
-        # 处理结果
-        hits = result.get("hits", {}).get("hits", [])
-        if not hits:
-            raise ValueError(f"Job with id {job_id} not found")
-            
-        source = hits[0].get("_source", {})
-        
-        # 构建公司信息
-        company = source.get("company", {})
-        if company:
-            company = CompanyBrief(
-                id=company.get("id"),
-                name=company.get("name"),
-                icon_url=company.get("icon_url")
-            )
-        
-        # 构建薪资范围
-        salary_range = source.get("salary_range", {})
-        if salary_range:
-            salary_range = SalaryRange(
-                min=salary_range.get("min"),
-                max=salary_range.get("max"),
-                fixed=salary_range.get("fixed"),
-                currency=salary_range.get("currency")
-            )
-        
-        # 返回职位详情
-        return JobDetail(
-            id=source.get("id"),
-            title=source.get("title"),
-            company=company,
-            location=source.get("location"),
-            employment_type=source.get("employment_type"),
-            posted_date=source.get("posted_date"),
-            is_remote=source.get("is_remote", False),
-            url=source.get("url"),
-            skill_tags=source.get("skill_tags", []),
-            summary=source.get("summary"),
-            salary_range=salary_range,
-            experience_level=source.get("experience_level"),
-            full_description=source.get("full_description"),
-        ) 

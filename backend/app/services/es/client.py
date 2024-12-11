@@ -28,10 +28,24 @@ class ESClient:
             body=query
         )
     
-    def index_document(self, doc_id: str, document: Dict[str, Any]) -> Dict[str, Any]:
-        """索引文档"""
+    def index_document(self, doc_id: str, document: Dict[str, Any], index: str = None) -> Dict[str, Any]:
+        """索引文档
+        Args:
+            doc_id: 文档ID
+            document: 文档内容
+            index: 可选的具体索引名称，如果不提供则使用别名指向的索引
+        """
+        if index is None:
+            # 如果没有提供具体索引，则尝试获取别名指向的索引
+            try:
+                aliases = self.client.indices.get_alias(name=settings.ES_JOB_INDEX)
+                index = list(aliases.keys())[0]
+            except Exception:
+                # 如果获取别名失败，使用别名作为索引名
+                index = settings.ES_JOB_INDEX
+        
         return self.client.index(
-            index=settings.ES_JOB_INDEX,
+            index=index,
             id=doc_id,
             document=document
         )
@@ -64,17 +78,6 @@ class ESClient:
             name=alias
         )
     
-    def update_alias(self, old_index: str, new_index: str, alias: str):
-        """更新索引别名"""
-        return self.client.indices.update_aliases(
-            body={
-                "actions": [
-                    {"remove": {"index": old_index, "alias": alias}},
-                    {"add": {"index": new_index, "alias": alias}}
-                ]
-            }
-        )
-    
     def delete_index(self, index: str):
         """删除索引"""
         if self.client.indices.exists(index=index):
@@ -89,9 +92,16 @@ class ESClient:
     
     def update_document(self, doc_id: str, document: Dict[str, Any]) -> Dict[str, Any]:
         """更新文档"""
+        actual_index = self.get_actual_index()
+        
         return self.client.update(
-            index=settings.ES_JOB_INDEX,
+            index=actual_index,
             id=doc_id,
             doc=document
         )
+    
+    def get_actual_index(self) -> str:
+        """获取别名指向的实际索引名称"""
+        aliases = self.client.indices.get_alias(name=settings.ES_JOB_INDEX)
+        return list(aliases.keys())[0]
     

@@ -46,16 +46,16 @@ class MicrosoftSpider(BasePagingJobSpider):
 
     def _parse_job_description(self, job_detail: dict) -> str:
         sections = [
-            ('Overview', self.sanitize_html(job_detail.get('description'))),
-            ('Qualifications', self.sanitize_html(job_detail.get('qualifications'))),
-            ('Responsibilities', self.sanitize_html(job_detail.get('responsibilities')))
+            ('Overview', job_detail.get('description')),
+            ('Qualifications', job_detail.get('qualifications')),
+            ('Responsibilities', job_detail.get('responsibilities'))
         ]
         
-        # 使用HTML结构组织内容
+        # 使用统一的 HTML 结构
         return '\n'.join(
-            f'<section class="job-section">'
+            f'<section>'
             f'<h2>{title}</h2>'
-            f'{content}'
+            f'{self.sanitize_description(content)}'
             f'</section>'
             for title, content in sections
         )

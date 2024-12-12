@@ -4,6 +4,7 @@ from data_storage.crud import CompanyCRUD, JobCRUD
 from abc import ABC, abstractmethod
 from typing import List
 from bs4 import BeautifulSoup
+import markdown
 
 class BasePagingJobSpider(scrapy.Spider, ABC):
     """
@@ -61,6 +62,39 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
         for tag in soup.find_all(True):
             tag.attrs = {key: value for key, value in tag.attrs.items() 
                         if key not in ['class', 'style']}
+        
+        return str(soup)
+
+    def sanitize_description(self, content: str | None, content_type: str = 'html') -> str:
+        """统一处理职位描述的格式
+        
+        Args:
+            content: 原始内容
+            content_type: 内容类型 ('html' 或 'markdown')
+        """
+        if not content:
+            return "<p>No information provided</p>"
+            
+        # 如果是 markdown 格式，先转换为 HTML
+        if content_type == 'markdown':
+            content = markdown.markdown(content, extensions=['extra'])
+            
+        # 使用 BeautifulSoup 统一处理 HTML
+        soup = BeautifulSoup(content, 'html.parser')
+        
+        # 保留允许的标签和属性
+        allowed_tags = {'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+                       'ul', 'ol', 'li', 'strong', 'em', 'a', 'section'}
+        allowed_attrs = {'href': ['a']}  # 只允许 a 标签保留 href 属性
+        
+        for tag in soup.find_all(True):
+            if tag.name not in allowed_tags:
+                tag.unwrap()  # 移除标签但保留内容
+            else:
+                # 清理属性
+                allowed = allowed_attrs.get(tag.name, [])
+                tag.attrs = {key: value for key, value in tag.attrs.items() 
+                           if key in allowed}
         
         return str(soup)
 

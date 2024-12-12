@@ -81,30 +81,33 @@ export function JobCard({ job }: JobCardProps) {
         {/* Job Details */}
         <div className="space-y-4">
           {/* Location, Experience, Salary */}
-          <div className="flex items-center gap-4 text-sm text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" />
-              {job.locations.length === 1 ? (
-                job.locations[0]
-              ) : (
-                <>
-                  {job.locations[0]}
-                  <span>
-                    {`; +${job.locations.length - 1} more`}
-                  </span>
-                </>
-              )}
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+            <span className="flex items-center gap-1.5 min-w-0 truncate">
+              <MapPin className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">
+                {job.locations.length === 1 ? (
+                  job.locations[0]
+                ) : (
+                  <>
+                    {job.locations[0]}
+                    <span>
+                      {`; +${job.locations.length - 1} more`}
+                    </span>
+                  </>
+                )}
+              </span>
             </span>
+
             {job.is_remote && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 flex-shrink-0">
                 Remote
               </span>
             )}
             
             {job.experience_level && (
               <>
-                <div className="w-px h-4 bg-gray-200" />
-                <span className="flex items-center gap-1.5">
+                <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
+                <span className="flex items-center gap-1.5 flex-shrink-0">
                   <Briefcase className="w-4 h-4" />
                   {getExperienceLevelLabel(job.experience_level)}
                 </span>
@@ -112,10 +115,10 @@ export function JobCard({ job }: JobCardProps) {
             )}
 
             <>
-              <div className="w-px h-4 bg-gray-200" />
-              <span className="flex items-center gap-1.5">
-                <DollarSign className="w-4 h-4" />
-                {formatSalary(job.salary_range)}
+              <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
+              <span className="flex items-center gap-1.5 min-w-0 truncate">
+                <DollarSign className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{formatSalary(job.salary_range)}</span>
               </span>
             </>
           </div>

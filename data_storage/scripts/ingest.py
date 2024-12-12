@@ -1,7 +1,6 @@
 import json
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
 from data_storage.crud import CompanyCRUD
 from data_storage.models import Base
 from data_storage.config import create_db_engine
@@ -25,6 +24,7 @@ def ingest_companies():
         company = crud.get_by_code(company_data['code'])
         if company:
             crud.update(company.id, **company_data)
+            print(f"Successfully updated company: {company.name}")
         else:
             # Create new company
             company = crud.create(
@@ -37,7 +37,7 @@ def ingest_companies():
                 industry=company_data['industry'],
                 headquarters=company_data['headquarters']
             )
-        print(f"Successfully inserted company: {company.name}")
+            print(f"Successfully inserted company: {company.name}")
 
 if __name__ == "__main__":
     create_tables()

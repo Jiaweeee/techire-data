@@ -1,3 +1,4 @@
+import argparse
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from scrapy.utils.spider import iter_spider_classes
@@ -15,12 +16,21 @@ def load_spiders(package_name='data_scrape.spiders'):
             spiders.append(spider_class)
     return spiders
 
-def main():
+def main(spider_name=None):
     process = CrawlerProcess(settings=get_project_settings())
     # 自动加载并运行所有爬虫
-    for spider in load_spiders():
+    spiders = load_spiders()
+    if spider_name:
+        # 只运行指定的爬虫
+        spiders = [spider for spider in spiders if spider.name == spider_name]
+    
+    for spider in spiders:
         process.crawl(spider)
     process.start()
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='Run Scrapy spiders.')
+    parser.add_argument('--spider', type=str, help='The name of the spider to run')
+    args = parser.parse_args()
+    
+    main(spider_name=args.spider)

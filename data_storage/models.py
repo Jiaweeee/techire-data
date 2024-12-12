@@ -80,7 +80,7 @@ class Job(Base):
         nullable=True,
         default=None
     )
-    location: Mapped[str] = mapped_column(String(64), nullable=True, default=None) # semicolon separated
+    location: Mapped[str] = mapped_column(String(1024), nullable=True, default=None) # semicolon separated
     expired: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_remote: Mapped[bool] = mapped_column(Boolean, nullable=True, default=None)
 

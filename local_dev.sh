@@ -2,7 +2,7 @@
 
 # Function to print usage
 print_usage() {
-    echo "Usage: $0 [api|ui|db|crawl|process|migrate [message]|es [action]]"
+    echo "Usage: $0 [api|ui|db|crawl|process|migrate [message]|es [action]|ingest]"
     echo "Examples:"
     echo "  $0 api       # Start Backend API service"
     echo "  $0 ui        # Start Frontend application"
@@ -14,6 +14,7 @@ print_usage() {
     echo "  $0 es init   # Initialize Elasticsearch index"
     echo "  $0 es update # Update index mapping"
     echo "  $0 es delete # Delete index"
+    echo "  $0 ingest    # Run data ingestion script"
 }
 
 # Check if argument is provided
@@ -46,7 +47,7 @@ start_crawl() {
     echo "Starting job data crawler..."
     if [ -n "$2" ]; then
         echo "Crawling specific spider: $2"
-        python run_spiders.py "$2"
+        python run_spiders.py --spider "$2"
     else
         echo "Crawling all spiders"
         python run_spiders.py
@@ -115,6 +116,10 @@ case "$1" in
         ;;
     "es")
         manage_es "$1" "$2"
+        ;;
+    "ingest")
+        echo "Running data ingestion script..."
+        python -m data_storage.scripts.ingest
         ;;
     *)
         echo "Error: Invalid service name: $1"

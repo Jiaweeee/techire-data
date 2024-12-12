@@ -40,7 +40,7 @@ export interface JobBrief {
   url: string;
   title: string;
   company: CompanyBrief;
-  location: string;
+  locations: string[];
   employment_type: EmploymentType | null;
   posted_date: string | null;
   is_remote: boolean | null;

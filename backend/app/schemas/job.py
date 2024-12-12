@@ -29,7 +29,7 @@ class JobBrief(BaseModel):
     id: str
     title: str
     company: CompanyBrief
-    location: Optional[str] = None
+    locations: Optional[List[str]] = None
     employment_type: Optional[int] = None
     posted_date: Optional[str] = None
     is_remote: Optional[bool] = False

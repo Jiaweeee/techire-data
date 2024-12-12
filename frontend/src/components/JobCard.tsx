@@ -84,7 +84,16 @@ export function JobCard({ job }: JobCardProps) {
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
-              {job.location}
+              {job.locations.length === 1 ? (
+                job.locations[0]
+              ) : (
+                <>
+                  {job.locations[0]}
+                  <span>
+                    {`; +${job.locations.length - 1} more`}
+                  </span>
+                </>
+              )}
             </span>
             {job.is_remote && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">

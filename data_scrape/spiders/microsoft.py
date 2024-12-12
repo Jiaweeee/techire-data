@@ -61,8 +61,30 @@ class MicrosoftSpider(BasePagingJobSpider):
         )
 
     def _parse_job_locations(self, job_detail: dict) -> List[str]:
-        location_obj = job_detail['primaryWorkLocation']
-        country = location_obj['country']
-        state = location_obj['state']
-        return [f"{country}, {state}"]
+        def _format_location(loc: dict) -> str:
+            city = loc.get('city', '')
+            state = loc.get('state', '')
+            country = loc.get('country', '')
+            if city and state and country:
+                return f"{city}, {state}, {country}"
+            elif state and country:
+                return f"{state}, {country}"
+            return ''
+        
+        locations = []
+        
+        # 处理 primaryWorkLocation
+        primary_loc = job_detail.get('primaryWorkLocation')
+        if primary_loc:
+            location = _format_location(primary_loc)
+            if location:
+                locations.append(location)
+        
+        # 处理 workLocations
+        for loc in job_detail.get('workLocations', []):
+            location = _format_location(loc)
+            if location:
+                locations.append(location)
+        
+        return list(set(locations))
     

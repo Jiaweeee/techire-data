@@ -30,7 +30,7 @@ class JobInfoStoragePipeline:
                 company_id=item.company_id,
                 posted_date=posted_date,
                 employment_type=employment_type,
-                location=', '.join(item.locations),
+                location=';'.join(item.locations),
                 expired=item.expired
             )
             # 创建初始状态为 pending 的 JobAnalysis 记录

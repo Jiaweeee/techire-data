@@ -28,13 +28,21 @@ class GoogleSpider(BasePagingJobSpider):
         return urls
 
     def extract_job_data(self, response) -> JobItem:
+        # 获取所有位置文本
+        raw_locations = response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[2]/span[2]/span//text()').getall()
+        # 处理位置信息：去除分号，过滤掉包含 "more" 的项
+        locations = [
+            loc.strip() for loc in ' '.join(raw_locations).split(';')
+            if loc.strip() and 'more' not in loc.lower()
+        ]
+        
         return JobItem(
             company_id=self.company.id,
             title=response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[1]/h2/text()').get(),
             url=response.url,
             full_description=self._parse_full_description(response),
             raw_employment_type="Full-time",  # All google jobs are full-time
-            locations=[response.xpath('//*[@id="yDmH0d"]/c-wiz[1]/div/div[2]/div/div/div[2]/main/div/c-wiz/div/div/div/span/div/div[2]/span[2]/span/text()').get()]
+            locations=locations
         )
 
     def _parse_full_description(self, response):

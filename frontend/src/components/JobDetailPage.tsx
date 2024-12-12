@@ -11,6 +11,7 @@ export function JobDetailPage() {
   const { jobId } = useParams();
   const [job, setJob] = useState<JobDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLocationsExpanded, setIsLocationsExpanded] = useState(false);
 
   useEffect(() => {
     async function loadJob() {
@@ -27,6 +28,11 @@ export function JobDetailPage() {
     }
     loadJob();
   }, [jobId]);
+
+  const handleLocationsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsLocationsExpanded(!isLocationsExpanded);
+  };
 
   if (isLoading) {
     return (
@@ -78,7 +84,29 @@ export function JobDetailPage() {
             <div className="flex flex-col gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-4 h-4" />
-                {job.location}
+                {job.locations.length === 1 ? (
+                  job.locations[0]
+                ) : (
+                  <>
+                    {isLocationsExpanded ? (
+                      <div className="flex flex-col gap-1">
+                        {job.locations.map((location, index) => (
+                          <span key={index}>{location}</span>
+                        ))}
+                      </div>
+                    ) : (
+                      <>
+                        {job.locations[0]}
+                        <button
+                          onClick={handleLocationsClick}
+                          className="underline"
+                        >
+                          {` +${job.locations.length - 1} more`}
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
                 {job.is_remote && (
                   <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                     Remote

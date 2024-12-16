@@ -24,6 +24,7 @@ class SalaryRange(BaseModel):
     fixed: Optional[float] = None
     currency: Optional[str] = None
     period: Optional[int] = None
+    is_estimated: Optional[bool] = False
 
 class JobBrief(BaseModel):
     id: str

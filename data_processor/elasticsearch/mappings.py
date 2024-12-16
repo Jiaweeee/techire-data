@@ -50,7 +50,8 @@ JOB_MAPPING = {
                     "max": {"type": "integer"},
                     "fixed": {"type": "integer"},
                     "currency": {"type": "keyword"},
-                    "period": {"type": "integer"}
+                    "period": {"type": "integer"},
+                    "is_estimated": {"type": "boolean"}
                 }
             },
             "experience_level": {"type": "integer"}

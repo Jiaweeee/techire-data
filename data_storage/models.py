@@ -135,9 +135,10 @@ class JobAnalysis(Base):
     salary_max: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     salary_fixed: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     salary_currency: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
+    salary_period: Mapped[Optional[SalaryPeriod]] = mapped_column(Integer, nullable=True)
+    is_salary_estimated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     
     # Other extracted information
     skill_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     experience_level: Mapped[Optional[ExperienceLevel]] = mapped_column(Integer, nullable=True)
     summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    salary_period: Mapped[Optional[SalaryPeriod]] = mapped_column(Integer, nullable=True)

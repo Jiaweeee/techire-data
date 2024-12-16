@@ -218,7 +218,8 @@ class JobSearchService:
             max=salary_data.get("max"),
             fixed=salary_data.get("fixed"),
             currency=salary_data.get("currency"),
-            period=salary_data.get("period")
+            period=salary_data.get("period"),
+            is_estimated=salary_data.get("is_estimated")
         )
 
     def _process_results(self, results: dict, params: JobSearchParams) -> JobSearchResponse:

@@ -77,7 +77,8 @@ def init_elasticsearch(batch_size=1000):
                         "max": job.analysis.salary_max,
                         "fixed": job.analysis.salary_fixed,
                         "currency": job.analysis.salary_currency,
-                        "period": job.analysis.salary_period
+                        "period": job.analysis.salary_period,
+                        "is_estimated": job.analysis.is_salary_estimated
                     }
                 }
                 

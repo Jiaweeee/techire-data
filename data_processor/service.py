@@ -1,7 +1,7 @@
 import signal
 import sys
 import logging
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from data_storage.config import create_db_engine
 from data_storage.models import Job, JobAnalysis
 import time
@@ -71,6 +71,7 @@ class JobProcessingService:
     def _get_pending_jobs(self, session: Session, batch_size: int = 10):
         return (
             session.query(Job)
+            .options(joinedload(Job.company))
             .join(JobAnalysis)
             .filter(JobAnalysis.status.in_(['pending', 'failed']))
             .limit(batch_size)
@@ -116,15 +117,20 @@ class JobProcessingService:
             with self.lock:
                 self.current_analyses.discard(analysis.id if analysis else None)
     
-    def _save_analysis(self, analysis, result, session: Session):
+    def _save_analysis(self, analysis: JobAnalysis, result, session: Session):
+        # Save salary information
         analysis.salary_min = result.get('salary_min')
         analysis.salary_max = result.get('salary_max')
         analysis.salary_fixed = result.get('salary_fixed')
         analysis.salary_currency = result.get('salary_currency')
+        analysis.salary_period = result.get('salary_period')
+        analysis.is_salary_estimated = result.get('is_salary_estimated')
+        
+        # Save other extracted information
         analysis.skill_tags = result.get('skill_tags')
         analysis.experience_level = result.get('experience_level')
         analysis.summary = result.get('summary')
-        analysis.salary_period = result.get('salary_period')
+        
         session.commit()
 
     def _handle_shutdown(self, signum, frame):

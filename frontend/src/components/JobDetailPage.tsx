@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Building2, MapPin, Briefcase, DollarSign, Clock } from 'lucide-react';
+import { Building2, MapPin, Briefcase, Clock } from 'lucide-react';
 import { getJobDetail } from '../services/api';
 import type { JobDetail } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
-import { formatSalary } from '../utils/salary';
+import { SalaryDisplay } from './SalaryDisplay';
 
 export function JobDetailPage() {
   const { jobId } = useParams();
@@ -130,8 +130,7 @@ export function JobDetailPage() {
 
               {job.salary_range && (
                 <span className="flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4" />
-                  {formatSalary(job.salary_range)}
+                  <SalaryDisplay salaryRange={job.salary_range} />
                 </span>
               )}
             </div>

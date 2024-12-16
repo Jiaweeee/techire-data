@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { JobBrief } from '../types/api';
-import { MapPin, Building2, Clock, Briefcase, DollarSign } from 'lucide-react';
+import { MapPin, Building2, Clock, Briefcase } from 'lucide-react';
 import { getExperienceLevelLabel } from '../types/experience';
-import { formatSalary } from '../utils/salary';
+import { SalaryDisplay } from './SalaryDisplay';
 
 interface JobCardProps {
   job: JobBrief;
@@ -116,10 +116,7 @@ export function JobCard({ job }: JobCardProps) {
 
             <>
               <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
-              <span className="flex items-center gap-1.5 min-w-0 truncate">
-                <DollarSign className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">{formatSalary(job.salary_range)}</span>
-              </span>
+              <SalaryDisplay salaryRange={job.salary_range} />
             </>
           </div>
         </div>

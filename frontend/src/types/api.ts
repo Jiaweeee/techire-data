@@ -33,6 +33,7 @@ export interface SalaryRange {
   fixed?: number;
   currency?: string;
   period?: SalaryPeriod;
+  is_estimated?: boolean;
 }
 
 export interface JobBrief {

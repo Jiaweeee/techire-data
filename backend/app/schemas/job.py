@@ -15,6 +15,7 @@ class JobSearchParams(BaseModel):
     location: Optional[str] = None
     is_remote: Optional[bool] = None
     sort_by: Optional[int] = JobSortBy.RELEVANCE
+    min_annual_salary: Optional[float] = None
     page: int = 1
     per_page: int = 10
 

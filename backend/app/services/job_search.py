@@ -197,6 +197,51 @@ class JobSearchService:
                 "terms": {"experience_level": params.experience_levels}
             })
         
+        # 添加最低年薪过滤
+        if params.min_annual_salary is not None:
+            salary_filter = {
+                "bool": {
+                    "should": [
+                        # 检查年薪范围
+                        {
+                            "bool": {
+                                "must": [
+                                    {"term": {"salary_range.period": 5}},  # 5 表示年薪
+                                    {
+                                        "bool": {
+                                            "should": [
+                                                {"range": {"salary_range.min": {"gte": params.min_annual_salary}}},
+                                                {"range": {"salary_range.max": {"gte": params.min_annual_salary}}},
+                                                {"range": {"salary_range.fixed": {"gte": params.min_annual_salary}}}
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        # 检查月薪范围并换算
+                        {
+                            "bool": {
+                                "must": [
+                                    {"term": {"salary_range.period": 4}},  # 4 表示月薪
+                                    {
+                                        "bool": {
+                                            "should": [
+                                                {"range": {"salary_range.min": {"gte": params.min_annual_salary / 12}}},
+                                                {"range": {"salary_range.max": {"gte": params.min_annual_salary / 12}}},
+                                                {"range": {"salary_range.fixed": {"gte": params.min_annual_salary / 12}}}
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        # 其他时间周期的薪资也可以类似处理
+                    ]
+                }
+            }
+            query["query"]["bool"]["filter"].append(salary_filter)
+
         return query
     
     def _build_company_brief(self, company_data: dict) -> CompanyBrief:

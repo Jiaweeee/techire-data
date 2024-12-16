@@ -21,6 +21,7 @@ export const searchJobs = async (params: SearchParams): Promise<SearchResponse> 
       sort_by: params.sort_by,
       is_remote: params.is_remote,
       location: params.location,
+      min_annual_salary: params.min_annual_salary,
       page: params.page || 1,
       per_page: params.per_page || 10,
     }),

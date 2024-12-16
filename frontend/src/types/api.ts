@@ -63,6 +63,7 @@ export interface SearchParams {
   sort_by?: number;
   is_remote?: boolean;
   location?: string;
+  min_annual_salary?: number;
   page?: number;
   per_page?: number;
 }

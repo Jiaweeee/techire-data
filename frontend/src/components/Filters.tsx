@@ -5,6 +5,7 @@ import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
 import { searchCompanies, getCompanies } from '../services/api';
 import { useDebounce } from '../hooks/useDebounce';
+import { SalarySlider } from './SalarySlider';
 
 export interface FilterTag {
     id: string;
@@ -197,6 +198,19 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
           >
             {showAllExperienceLevels ? 'See less' : 'See more'}
           </button>
+        </div>
+      </div>
+
+      {/* Salary Filter */}
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Salary</h3>
+        <div className="px-4">
+          <SalarySlider
+            value={params.min_annual_salary || 0}
+            onChange={(value) => {
+              onFilterChange({ min_annual_salary: value });
+            }}
+          />
         </div>
       </div>
     </div>

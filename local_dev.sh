@@ -2,15 +2,15 @@
 
 # Function to print usage
 print_usage() {
-    echo "Usage: $0 [api|ui|db|crawl|process|migrate [message]|es [action]|ingest]"
+    echo "Usage: $0 [api|ui|db:view|db:migrate|crawl|process|es [action]|ingest]"
     echo "Examples:"
     echo "  $0 api       # Start Backend API service"
     echo "  $0 ui        # Start Frontend application"
-    echo "  $0 db        # Start Database viewer"
+    echo "  $0 db:view   # Start Database viewer"
+    echo "  $0 db:migrate # Apply existing migrations"
+    echo "  $0 db:migrate \"Add user table\" # Generate new migration"
     echo "  $0 crawl     # Start job data crawler"
     echo "  $0 process   # Start data processing service"
-    echo "  $0 migrate   # Apply existing migrations"
-    echo "  $0 migrate \"Add user table\" # Generate new migration"
     echo "  $0 es init   # Initialize Elasticsearch index"
     echo "  $0 es update # Update index mapping"
     echo "  $0 es delete # Delete index"
@@ -102,17 +102,17 @@ case "$1" in
     "ui")
         start_frontend
         ;;
-    "db")
+    "db:view")
         start_db
+        ;;
+    "db:migrate")
+        start_migrate "$1" "$2"
         ;;
     "crawl")
         start_crawl "$1" "$2"
         ;;
     "process")
         start_processing
-        ;;
-    "migrate")
-        start_migrate "$1" "$2"
         ;;
     "es")
         manage_es "$1" "$2"

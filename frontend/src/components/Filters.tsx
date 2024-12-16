@@ -204,7 +204,7 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
       {/* Salary Filter */}
       <div className="border-t border-gray-200 pt-4">
         <h3 className="font-semibold text-gray-900 mb-2">Salary</h3>
-        <div className="px-4">
+        <div className="px-2">
           <SalarySlider
             value={params.min_annual_salary || 0}
             onChange={(value) => {

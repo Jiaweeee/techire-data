@@ -35,7 +35,7 @@ export function HomePage() {
 
         {/* Slogan */}
         <h1 className="text-4xl font-bold text-gray-900">
-            Find Fresh Jobs Straight from the Source.
+            Find Fresh Tech Jobs Straight from the Source.
         </h1>
 
         {/* Search */}

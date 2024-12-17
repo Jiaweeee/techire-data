@@ -57,7 +57,7 @@ export interface JobDetail extends JobBrief {
 
 export interface SearchParams {
   q?: string;
-  employment_types?: string[];
+  employment_types?: number[];
   experience_levels?: number[];
   company_ids?: string[];
   sort_by?: number;

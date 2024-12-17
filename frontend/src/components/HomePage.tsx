@@ -35,7 +35,7 @@ export function HomePage() {
 
         {/* Slogan */}
         <h1 className="text-4xl font-bold text-gray-900">
-            Find Fresh Tech Jobs Straight from the Source.
+            Find Fresh Tech Jobs Straight From The Source
         </h1>
 
         {/* Search */}
@@ -48,7 +48,7 @@ export function HomePage() {
           {stats ? (
             <>
               Indexed <span className="font-medium text-gray-900">{stats.total_jobs.toLocaleString()}</span> jobs directly from{' '}
-              <span className="font-medium text-gray-900">{stats.total_companies.toLocaleString()}</span> official company career pages
+              <span className="font-medium text-gray-900">{stats.total_companies.toLocaleString()}</span> official company career pages and counting
             </>
           ) : (
             null

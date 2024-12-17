@@ -22,7 +22,12 @@ export function Logo({ onClick }: LogoProps) {
       onClick={handleClick}
     >
       <LucideCheckCircle color="#FF0000" strokeWidth={3} className="w-8 h-8" />
-      <span className="text-2xl font-bold">RealTechJobs</span>
+      <div className="flex items-center gap-2">
+        <span className="text-2xl font-bold">RealTechJobs</span>
+        <span className="text-xs bg-indigo-500 text-white px-1.5 py-0.5 rounded">
+          BETA
+        </span>
+      </div>
     </div>
   );
 }

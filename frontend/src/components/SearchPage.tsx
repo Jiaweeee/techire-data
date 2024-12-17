@@ -110,6 +110,7 @@ export function SearchPage() {
           : 'Search thousands of tech jobs from leading technology companies. Direct access to real job opportunities.'
         }
         canonical={`${window.location.origin}/search${query ? `?q=${query}` : ''}`}
+        type="website"
       />
       <div className="min-h-screen bg-gray-50">
         {/* Search Container */}

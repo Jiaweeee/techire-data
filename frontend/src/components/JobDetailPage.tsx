@@ -62,6 +62,8 @@ export function JobDetailPage() {
             job.summary ? job.summary.slice(0, 150) + '...' : ''
           }`}
           canonical={`${window.location.origin}/jobs/${job.id}`}
+          type="job"
+          image={job.company.icon_url || undefined}
         />
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

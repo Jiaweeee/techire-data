@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { JobDetailPage } from './components/JobDetailPage';
 import { SearchPage } from './components/SearchPage';
 import { HomePage } from './components/HomePage';
+import { AboutPage } from './components/AboutPage';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           </Routes>

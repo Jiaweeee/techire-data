@@ -74,3 +74,8 @@ export interface SearchResponse {
   page: number;
   per_page: number;
 }
+
+export interface StatsResponse {
+  total_jobs: number;
+  total_companies: number;
+}

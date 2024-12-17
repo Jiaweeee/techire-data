@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
 import { JobList } from './JobList';
 import { Filters, FilterTag } from './Filters';
@@ -6,22 +7,25 @@ import { JobBrief, SearchParams } from '../types/api';
 import { searchJobs } from '../services/api';
 import { JobSortBy } from '../types/job';
 import { ChevronDown } from 'lucide-react';
+import { Logo } from './Logo';
 
 export function SearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState<JobBrief[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchParams, setSearchParams] = useState<SearchParams>({
+  const [params, setParams] = useState<SearchParams>({
     page: 1,
     per_page: 10,
-    sort_by: JobSortBy.RELEVANCE
+    sort_by: JobSortBy.RELEVANCE,
+    q: searchParams.get('q') || undefined
   });
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
 
   const handleSearch = useCallback(async (newParams: Partial<SearchParams>) => {
     setIsLoading(true);
     try {
-      const updatedParams = { ...searchParams, ...newParams };
+      const updatedParams = { ...params, ...newParams };
       if (newParams.page === 1) {
         // Clear existing results if it's a new search
         setJobs([]);
@@ -33,20 +37,31 @@ export function SearchPage() {
         setJobs(prev => [...prev, ...response.results]);
       }
       setTotal(response.total);
-      setSearchParams(updatedParams);
+      setParams(updatedParams);
+      
+      if (updatedParams.q) {
+        setSearchParams({ q: updatedParams.q });
+      }
     } catch (error) {
       console.error('Failed to search jobs:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [searchParams]);
+  }, [params, setSearchParams]);
+
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query) {
+      handleSearch({ q: query, page: 1 });
+    }
+  }, []);
 
   const handleLoadMore = () => {
-    handleSearch({ page: (searchParams.page || 1) + 1 });
+    handleSearch({ page: (params.page || 1) + 1 });
   };
 
   const handleClearFilters = () => {
-    setSearchParams(prev => ({
+    setParams(prev => ({
       q: prev.q,
       page: 1,
       per_page: 10,
@@ -64,19 +79,19 @@ export function SearchPage() {
     switch (tag.type) {
       case 'company':
         handleSearch({ 
-          company_ids: searchParams.company_ids?.filter(id => id !== tag.value), 
+          company_ids: params.company_ids?.filter(id => id !== tag.value), 
           page: 1
         });
         break;
       case 'employment':
         handleSearch({ 
-          employment_types: searchParams.employment_types?.filter(type => type !== tag.value),
+          employment_types: params.employment_types?.filter(type => type !== tag.value),
           page: 1
         });
         break;
       case 'experience':
         handleSearch({ 
-          experience_levels: searchParams.experience_levels?.filter(level => level !== tag.value),
+          experience_levels: params.experience_levels?.filter(level => level !== tag.value),
           page: 1
         });
         break;
@@ -88,10 +103,19 @@ export function SearchPage() {
       {/* Search Container */}
       <div>
         <div className="max-w-5xl mx-auto px-4 py-8">
-          <SearchBar
-            initialQuery={searchParams.q}
-            onSearch={(query) => handleSearch({ q: query, page: 1 })}
-          />
+          <div className="flex items-center gap-12">
+            {/* Left side - same width as Filters */}
+            <div className="w-64 flex-shrink-0">
+              <Logo />
+            </div>
+            {/* Right side - aligns with Results */}
+            <div className="flex-1">
+              <SearchBar
+                initialQuery={params.q}
+                onSearch={(query) => handleSearch({ q: query, page: 1 })}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -101,7 +125,7 @@ export function SearchPage() {
           {/* Filters */}
           <div className="w-64 flex-shrink-0">
             <Filters
-              params={searchParams}
+              params={params}
               onFilterChange={(newParams) => handleSearch({ ...newParams, page: 1 })}
               onTagsChange={setFilterTags}
             />
@@ -132,7 +156,7 @@ export function SearchPage() {
             <div className="mb-4 flex items-center justify-between">
                 <div className="relative">
                     <select
-                        value={searchParams.sort_by}
+                        value={params.sort_by}
                         onChange={(e) => handleSearch({ sort_by: Number(e.target.value), page: 1 })}
                         className="appearance-none bg-white border rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     >

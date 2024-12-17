@@ -2,7 +2,8 @@ import {
     SearchParams,
     SearchResponse,
     JobDetail,
-    CompanyBrief
+    CompanyBrief,
+    StatsResponse
 } from '../types/api';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -59,5 +60,15 @@ export async function getCompanies(): Promise<CompanyBrief[]> {
   if (!response.ok) {
     throw new Error('Failed to fetch companies');
   }
+  return response.json();
+}
+
+export const getStats = async (): Promise<StatsResponse> => {
+  const response = await fetch(`${API_BASE_URL}/stats/summary`);
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch stats');
+  }
+  
   return response.json();
 }

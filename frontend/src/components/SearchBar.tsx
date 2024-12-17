@@ -26,7 +26,7 @@ export function SearchBar({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search jobs..."
+            placeholder="Search jobs by title, location, company, etc..."
             className="w-full pl-12 pr-4 py-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>

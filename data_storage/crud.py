@@ -114,6 +114,14 @@ class CompanyCRUD(BaseCRUD[Company]):
                 .filter(Company.name.ilike(f"%{name}%"))\
                 .limit(limit)\
                 .all()
+    
+    def count_total(self) -> int:
+        """
+        获取公司总数
+        :return: 公司总数
+        """
+        with self._get_session() as session:
+            return session.query(self.model).count()
 
 class JobCRUD(BaseCRUD[Job]):
     def __init__(self):

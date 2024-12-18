@@ -15,7 +15,7 @@ class UberSpider(BasePagingJobSpider):
         return data['data']['totalResults']['low']
 
     def get_page_size(self) -> int:
-        return 10
+        return 100
 
     def get_page_url(self, page: int, page_size: int) -> str:
         # Uber API 使用 POST 请求，这个 URL 不会被直接使用
@@ -53,6 +53,7 @@ class UberSpider(BasePagingJobSpider):
     def parse_first_page(self, response):
         """处理第一页并发起后续请求"""
         total_jobs = self.get_total_jobs(response)
+        self.total_jobs = total_jobs
         total_pages = (total_jobs + self.get_page_size() - 1) // self.get_page_size()
         
         # 处理第一页数据
@@ -94,18 +95,24 @@ class UberSpider(BasePagingJobSpider):
     def parse_page(self, response):
         """处理每一页的数据"""
         try:
+            self.total_jobs = self.get_total_jobs(response)
             data = response.json()
             if not data or 'data' not in data or 'results' not in data['data']:
                 self.logger.error(f"Invalid API response format: {data}")
                 return
 
             jobs = data['data']['results']
+            self.processed_jobs += len(jobs)
             for job in jobs:
                 try:
                     job_item = self._parse_job_data(job)
+                    self.active_job_urls.add(job_item.url)
                     yield job_item
                 except Exception as e:
                     self.logger.error(f"Error processing job: {str(e)}")
+
+            if self.processed_jobs >= self.total_jobs:
+                self.crawl_successful = True
 
         except Exception as e:
             self.logger.error(f"Error processing page: {str(e)}")

@@ -28,5 +28,15 @@
         "introduction": "",
         "industry": "Internet Marketplace Platforms",
         "headquarters": "San Francisco, California, United States"
+    },
+    {
+        "code": "tiktok",
+        "name": "TikTok",
+        "official_site_url": "https://www.tiktok.com/",
+        "careers_page_url": "https://lifeattiktok.com/search",
+        "icon_url": "https://cdn.brandfetch.io/id-0D6OFrq/w/800/h/775/theme/dark/id-Ga6UmZw.png?c=1dxbfHSJFAPEGdCLU4o5B",
+        "introduction": "",
+        "industry": "Entertainment Providers",
+        "headquarters": "Los Angeles, California, United States"
     }
 ]

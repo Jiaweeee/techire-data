@@ -70,10 +70,16 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
         
         Args:
             content: 原始内容
-            content_type: 内容类型 ('html' 或 'markdown')
+            content_type: 内容类型 ('html', 'markdown', 或 'plaintext')
         """
         if not content:
             return "<p>No information provided</p>"
+        
+        # 如果是纯文本，先将换行符转换为HTML段落
+        if content_type == 'plaintext':
+            paragraphs = content.split('\n')
+            content = ''.join([f"<p>{p}</p>" for p in paragraphs if p.strip()])
+            content_type = 'html'  # 转换后按HTML处理
             
         # 如果是 markdown 格式，先转换为 HTML
         if content_type == 'markdown':

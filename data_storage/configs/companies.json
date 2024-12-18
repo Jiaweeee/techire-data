@@ -38,5 +38,15 @@
         "introduction": "",
         "industry": "Entertainment Providers",
         "headquarters": "Los Angeles, California, United States"
+    },
+    {
+        "code": "meta",
+        "name": "Meta",
+        "official_site_url": "https://www.meta.com/",
+        "careers_page_url": "https://www.metacareers.com/jobs",
+        "icon_url": "https://cdn.brandfetch.io/idWvz5T3V7/w/400/h/400/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B",
+        "introduction": "",
+        "industry": "Software Development",
+        "headquarters": "Menlo Park, California, United States"
     }
 ]

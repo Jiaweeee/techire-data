@@ -1,0 +1,12 @@
+curl --location 'https://api.lifeattiktok.com/api/v1/public/supplier/search/job/posts' \
+--header 'Website-Path: tiktok' \
+--header 'Content-Type: application/json' \
+--data '{
+    "recruitment_id_list": [],
+    "job_category_id_list": [],
+    "subject_id_list": [],
+    "location_code_list": [],
+    "keyword": "",
+    "limit": 5,
+    "offset": 0
+}'

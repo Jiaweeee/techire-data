@@ -68,6 +68,7 @@ class MetaSpider(BasePagingJobSpider):
             company_id=self.company.id,
             title=title,
             url=response.url,
+            raw_employment_type='Full-time', # All Meta jobs are full-time
             full_description=self.sanitize_description(description),
             locations=locations
         )

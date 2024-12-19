@@ -125,7 +125,7 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
                 {companies.map(company => (
                   <div
                     key={company.id}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
                     onClick={() => {
                         if (!params.company_ids?.includes(company.id)) {
                             const newCompanyIds = [...(params.company_ids || []), company.id];
@@ -134,6 +134,14 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
                         setIsCompanyListOpen(false)
                     }}
                   >
+                    <img 
+                      src={company.icon_url} 
+                      alt={`${company.name} logo`}
+                      className="w-4 h-4 object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/default-company-icon.png';
+                      }}
+                    />
                     <span className="text-sm text-gray-700">{company.name}</span>
                   </div>
                 ))}

@@ -25,12 +25,12 @@ export function SearchPage() {
 
   const handleSearch = useCallback(async (newParams: Partial<SearchParams>) => {
     setIsLoading(true);
+    const updatedParams = { ...params, ...newParams };
+    if (newParams.page === 1) {
+      // Clear existing results if it's a new search
+      setJobs([]);
+    }
     try {
-      const updatedParams = { ...params, ...newParams };
-      if (newParams.page === 1) {
-        // Clear existing results if it's a new search
-        setJobs([]);
-      }
       const response = await searchJobs(updatedParams);
       if (newParams.page === 1) {
         setJobs(response.results);
@@ -38,14 +38,13 @@ export function SearchPage() {
         setJobs(prev => [...prev, ...response.results]);
       }
       setTotal(response.total);
-      setParams(updatedParams);
-      
-      if (updatedParams.q) {
-        setSearchParams({ q: updatedParams.q });
-      }
     } catch (error) {
       console.error('Failed to search jobs:', error);
     } finally {
+      setParams(updatedParams);
+      if (updatedParams.q) {
+        setSearchParams({ q: updatedParams.q });
+      }
       setIsLoading(false);
     }
   }, [params, setSearchParams]);

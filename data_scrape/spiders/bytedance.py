@@ -149,10 +149,6 @@ class ByteDanceSpider(BasePagingJobSpider):
             if location_parts:
                 locations.append(', '.join(location_parts))
 
-        # Get employment type from recruit_type
-        recruit_type = job.get('recruit_type', {})
-        employment_type = recruit_type.get('en_name') if recruit_type else None
-
         # Combine description and requirement
         full_description = job.get('description', '')
         if job.get('requirement'):

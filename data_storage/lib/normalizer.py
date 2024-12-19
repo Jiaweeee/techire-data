@@ -36,13 +36,24 @@ class EmploymentTypeNormalizer:
 
 class DateNormalizer:
     @staticmethod
-    def normalize(raw_date: str) -> datetime:
+    def normalize(raw_date: str | int | float) -> datetime:
         if not raw_date:
             return None
         
+        # 处理时间戳 (毫秒)
+        if isinstance(raw_date, (int, float)) or raw_date.isdigit():
+            timestamp = float(raw_date)
+            # 如果时间戳是毫秒级的，转换为秒级
+            if timestamp > 1e11:  # 简单判断是否为毫秒时间戳
+                timestamp = timestamp / 1000
+            # 转换为datetime并去除毫秒
+            dt = datetime.fromtimestamp(timestamp)
+            return dt.replace(microsecond=0)
+        
         try:
-            # 尝试解析日期
-            return parser.isoparse(raw_date)
+            # 尝试解析日期，并去除毫秒
+            dt = parser.isoparse(raw_date)
+            return dt.replace(microsecond=0)
         except ValueError:
             pass
         

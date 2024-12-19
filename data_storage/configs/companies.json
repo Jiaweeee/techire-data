@@ -48,5 +48,15 @@
         "introduction": "",
         "industry": "Software Development",
         "headquarters": "Menlo Park, California, United States"
+    },
+    {
+        "code": "bytedance",
+        "name": "ByteDance",
+        "official_site_url": "https://www.bytedance.com/",
+        "careers_page_url": "https://jobs.bytedance.com/en/position",
+        "icon_url": "https://cdn.brandfetch.io/idpvLdHQW7/w/433/h/433/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B",
+        "introduction": "",
+        "industry": "Software Development",
+        "headquarters": "China, China"
     }
 ]

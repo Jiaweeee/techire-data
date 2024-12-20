@@ -44,9 +44,8 @@ class MicrosoftSpider(BasePagingJobSpider):
             expired=unposted is not None
         )
     
-    def close(self, reason):
-        # Microsoft marked expired jobs when processing
-        self.logger.info(f"Spider {self.name} closed with reason: {reason}")
+    def skip_mark_expired(self) -> bool:
+        return True
 
     def _parse_job_description(self, job_detail: dict) -> str:
         sections = [

@@ -41,7 +41,7 @@ def init_elasticsearch(batch_size=1000):
             jobs = (db.query(Job)
                    .join(JobAnalysis, Job.id == JobAnalysis.job_id)
                    .filter(Job.expired == False)
-                   .filter(JobAnalysis.status == 'completed')
+                   .filter(JobAnalysis.status == 'indexed')
                    .order_by(Job.id)
                    .limit(batch_size)
                    .offset(offset)

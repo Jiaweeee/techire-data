@@ -135,6 +135,10 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
         """Extract job details from detail page"""
         pass
 
+    def skip_mark_expired(self) -> bool:
+        """Override if no need to mark expired jobs"""
+        return False
+
     def should_disable_filter(self) -> bool:
         """Override if need to disable duplicate filter"""
         return False
@@ -143,16 +147,19 @@ class BasePagingJobSpider(scrapy.Spider, ABC):
         """Spider关闭时被调用"""
         # 只在爬取成功完成时更新过期状态
         if self.crawl_successful:
-            job_crud = JobCRUD()
-            updated_count = job_crud.mark_jobs_expired(
-                self.company.id, 
-                self.active_job_urls
-            )
-            self.logger.info(
-                f"Spider {self.name} completed successfully. "
-                f"Marked {updated_count} jobs as expired. "
-                f"Found {len(self.active_job_urls)} active jobs."
-            )
+            if not self.skip_mark_expired():
+                job_crud = JobCRUD()
+                updated_count = job_crud.mark_jobs_expired(
+                    self.company.id, 
+                    self.active_job_urls
+                )
+                self.logger.info(
+                    f"Spider {self.name} completed successfully. "
+                    f"Marked {updated_count} jobs as expired. "
+                    f"Found {len(self.active_job_urls)} active jobs."
+                )
+            else:
+                self.logger.info(f"Spider {self.name} completed successfully. ")
         else:
             self.logger.warning(
                 f"Spider {self.name} did not complete successfully. "

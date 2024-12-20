@@ -58,5 +58,15 @@
         "introduction": "",
         "industry": "Software Development",
         "headquarters": "China, China"
+    },
+    {
+        "code": "nvidia",
+        "name": "NVIDIA",
+        "official_site_url": "https://www.nvidia.com/",
+        "careers_page_url": "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite",
+        "icon_url": "https://cdn.brandfetch.io/idXoj5DuCE/w/400/h/400/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B",
+        "introduction": "",
+        "industry": "Computer Hardware Manufacturing",
+        "headquarters": "Santa Clara, California, United States"
     }
 ]

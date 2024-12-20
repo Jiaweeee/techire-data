@@ -28,9 +28,9 @@ class OpenAIService:
         return self.model
 
 class InfoExtractingProcessor(Processor):
-    def __init__(self):
+    def __init__(self, llm_provider: str = 'deepseek'):
         self.job_analysis_crud = JobAnalysisCRUD()
-        llm_config = load_config()['llm']['services']['siliconflow']
+        llm_config = load_config()['llm']['services'][llm_provider]
         openai_service = OpenAIService(llm_config)
         self.client = openai_service.get_client()
         self.chat_model = openai_service.get_model()

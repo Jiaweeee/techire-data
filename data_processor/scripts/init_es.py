@@ -14,7 +14,8 @@ def format_date(date_str):
     try:
         date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
         return date_obj.strftime('%Y-%m-%dT%H:%M:%S')
-    except Exception:
+    except Exception as e:
+        print(f"Error formatting date: {str(e)}")
         return None
 
 def init_elasticsearch(batch_size=1000):

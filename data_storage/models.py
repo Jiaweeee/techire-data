@@ -126,7 +126,7 @@ class JobAnalysis(Base):
     status: Mapped[str] = mapped_column(
         String(32), 
         nullable=False, 
-        default='pending', # pending, processing, completed, failed
+        default='pending', # pending, processing, processed, indexed, failed
         index=True
     )
     

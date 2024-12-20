@@ -2,7 +2,7 @@
 
 # Function to print usage
 print_usage() {
-    echo "Usage: $0 [api|ui|db:view|db:migrate|crawl|process|es [action]|ingest]"
+    echo "Usage: $0 [api|ui|db:view|db:migrate|crawl|process [type]|es [action]|ingest]"
     echo "Examples:"
     echo "  $0 api       # Start Backend API service"
     echo "  $0 ui        # Start Frontend application"
@@ -10,7 +10,8 @@ print_usage() {
     echo "  $0 db:migrate # Apply existing migrations"
     echo "  $0 db:migrate \"Add user table\" # Generate new migration"
     echo "  $0 crawl     # Start job data crawler"
-    echo "  $0 process   # Start data processing service"
+    echo "  $0 process extract  # Start info extraction service"
+    echo "  $0 process index   # Start job indexing service"
     echo "  $0 es init   # Initialize Elasticsearch index"
     echo "  $0 es update # Update index mapping"
     echo "  $0 es delete # Delete index"
@@ -56,8 +57,14 @@ start_crawl() {
 
 # Function to start job analysis service
 start_processing() {
-    echo "Starting data processing service..."
-    python -m data_processor.main
+    if [ -n "$2" ]; then
+        echo "Starting data processing service ($2)..."
+        python -m data_processor.main "$2"
+    else
+        echo "Error: Processing type not specified"
+        echo "Available types: extract, index"
+        exit 1
+    fi
 }
 
 # Function to run database migrations
@@ -112,7 +119,7 @@ case "$1" in
         start_crawl "$1" "$2"
         ;;
     "process")
-        start_processing
+        start_processing "$1" "$2"
         ;;
     "es")
         manage_es "$1" "$2"

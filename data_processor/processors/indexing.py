@@ -12,9 +12,6 @@ class DataIndexingProcessor(Processor):
     def __init__(self):
         self.es_client = ESClient()
 
-    def setup(self):
-        self.es_client.create_index(os.getenv("ES_JOB_INDEX"), JOB_MAPPING)
-
     def process(self, job: Job):
         if not job.analysis:
             logger.error(f"Job {job.id} has no analysis")

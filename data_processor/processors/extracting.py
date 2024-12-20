@@ -6,22 +6,37 @@ from data_storage.models import Job, ExperienceLevel, SalaryPeriod
 from dotenv import load_dotenv
 from ratelimit import limits, sleep_and_retry
 import logging
-import os
 import json
 import backoff
+from data_processor.config import load_config
 
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+class OpenAIService:
+    def __init__(self, config: dict):
+        self.client = OpenAI(
+            api_key=config.get("api_key"),
+            base_url=config.get("base_url")
+        )
+        self.model = config.get("model")
+    
+    def get_client(self) -> OpenAI:
+        return self.client
+    
+    def get_model(self) -> str:
+        return self.model
+
 class InfoExtractingProcessor(Processor):
     def __init__(self):
         self.job_analysis_crud = JobAnalysisCRUD()
-        self.client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            base_url=os.getenv("OPENAI_BASE_URL")
-        )
-        self.chat_model = os.getenv("CHAT_MODEL")
-        self.calls_per_minute = 50  # 根据你的 API 限制调整
+        llm_config = load_config()['llm']['services']['siliconflow']
+        openai_service = OpenAIService(llm_config)
+        self.client = openai_service.get_client()
+        self.chat_model = openai_service.get_model()
+        # log llm config info and model
+        logger.info(f"LLM config info: {llm_config}")
+        logger.info(f"LLM model: {self.chat_model}")
 
     def process(self, job: Job) -> Optional[Dict[str, Any]]:
         prompt = self._create_analysis_prompt(
@@ -29,7 +44,7 @@ class InfoExtractingProcessor(Processor):
             description=job.full_description, 
             company_name=job.company.name, 
             location=job.location
-        )
+        ) 
         return self._get_llm_analysis(prompt)
 
     def _create_analysis_prompt(self, title: str, description: str, company_name: str, location: str) -> str:

@@ -33,9 +33,6 @@ class JobProcessingService:
     def run(self, interval: int = 60):
         """运行服务"""
         logger.info("Job Analysis Service started")
-
-        for processor in self.processors.values():
-            processor.setup()
         
         while True:
             try:
@@ -102,10 +99,10 @@ class JobProcessingService:
                 job = session.merge(job)
                 self.processors['indexing'].process(job)
                 analysis.status = 'completed'
+                logger.info(f"Successfully analyzed job {job.id}")
             else:
                 analysis.status = 'failed'
             session.commit()
-            logger.info(f"Successfully analyzed job {job.id}")
             
         except Exception as e:
             logger.error(f"Error analyzing job {job.id}: {str(e)}")

@@ -1,0 +1,35 @@
+llm:
+  services:
+    openai:
+      type: "openai"
+      api_key: "sk-proj-U8TUp7N25LaQB3iBvdwlT3BlbkFJMTUdlAYWfVqErP1ZSWGZ"
+      base_url: "https://api.openai.com"
+      model: "gpt-4o"
+      rate_limit:
+        calls: 50
+        period: 60  # seconds
+    deepseek:
+      type: "openai"
+      api_key: "sk-4d1bb7d900a44d51b74a9e290f3b1255"
+      base_url: "https://api.deepseek.com"
+      model: "deepseek-chat"
+      rate_limit:
+        calls: 50
+        period: 60
+    moonshot:
+      type: "openai"
+      api_key: "sk-Pg2qTENAOiv7H9zJL6dLV3VLFMV4Mb0bigjdamsWWC4pzwuC"
+      base_url: "https://api.moonshot.cn/v1"
+      model: "moonshot-v1-8k"
+      rate_limit:
+        calls: 50
+        period: 60
+    siliconflow:
+      type: "openai"
+      api_key: "sk-bmuxukborffpkszfdvxwkibsizpvqvtrbjwxiqsbbrdykgbe"
+      base_url: "https://api.siliconflow.cn/v1"
+      #model: "deepseek-ai/DeepSeek-V2.5"
+      model: "01-ai/Yi-1.5-9B-Chat-16K" # Free
+      rate_limit:
+        calls: 50
+        period: 60

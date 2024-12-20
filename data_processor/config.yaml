@@ -1,7 +1,7 @@
 llm:
   services:
     openai:
-      type: "openai"
+      type: "openai" # API compatible with OpenAI
       api_key: "sk-proj-U8TUp7N25LaQB3iBvdwlT3BlbkFJMTUdlAYWfVqErP1ZSWGZ"
       base_url: "https://api.openai.com"
       model: "gpt-4o"
@@ -28,8 +28,7 @@ llm:
       type: "openai"
       api_key: "sk-bmuxukborffpkszfdvxwkibsizpvqvtrbjwxiqsbbrdykgbe"
       base_url: "https://api.siliconflow.cn/v1"
-      #model: "deepseek-ai/DeepSeek-V2.5"
-      model: "01-ai/Yi-1.5-9B-Chat-16K" # Free
+      model: "deepseek-ai/DeepSeek-V2.5"
       rate_limit:
         calls: 50
         period: 60

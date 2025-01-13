@@ -35,7 +35,15 @@ JOB_MAPPING = {
                     "keyword": {"type": "keyword"}
                 }
             },
-            "location": {"type": "text"},
+            "locations": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
+            },
             "employment_type": {"type": "keyword"},
             "posted_date": {
                 "type": "date",

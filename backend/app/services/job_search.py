@@ -42,7 +42,7 @@ class JobSearchService:
             id=source.get("id"),
             title=source.get("title"),
             company=self._build_company_brief(source.get("company")),
-            locations=source.get("location", '').split(';'),
+            locations=source.get("locations", []),
             employment_type=source.get("employment_type"),
             posted_date=source.get("posted_date"),
             is_remote=source.get("is_remote", False),
@@ -164,9 +164,11 @@ class JobSearchService:
             ]
 
         # 添加位置过滤
-        if params.location:
+        if params.locations:
             query["query"]["bool"]["filter"].append({
-                "match": {"location": params.location}
+                "terms": {
+                    "locations.keyword": params.locations
+                }
             })
 
         # 添加远程工作过滤
@@ -240,6 +242,27 @@ class JobSearchService:
 
         return query
     
+    def get_unique_locations(self) -> list[str]:
+        """获取所有唯一的工作地点"""
+        query = {
+            "size": 0,  # 不需要返回具体文档
+            "aggs": {
+                "unique_locations": {
+                    "terms": {
+                        "field": "locations.keyword",
+                        "size": 10000  # 假设最多有10000个不同的地点
+                    }
+                }
+            }
+        }
+        
+        results = self.es_client.search(query)
+        buckets = results.get("aggregations", {}).get("unique_locations", {}).get("buckets", [])
+        
+        # 提取地点名称并过滤掉空值
+        return [bucket["key"] for bucket in buckets if bucket["key"]]
+
+
     def _build_company_brief(self, company_data: dict) -> CompanyBrief:
         """构建公司简要信息"""
         if not company_data:
@@ -276,7 +299,7 @@ class JobSearchService:
                 id=source.get("id"),
                 title=source.get("title"),
                 company=self._build_company_brief(source.get("company")),
-                locations=source.get("location", '').split(';'),
+                locations=source.get("locations", []),
                 employment_type=source.get("employment_type"),
                 posted_date=source.get("posted_date"),
                 is_remote=source.get("is_remote", False),

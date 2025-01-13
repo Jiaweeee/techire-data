@@ -29,3 +29,13 @@ async def job_detail(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+@router.get("/locations")
+async def get_locations():
+    locations = []
+    try:
+        search_service = JobSearchService()
+        locations = search_service.get_unique_locations()
+    except Exception as e:
+        logger.error(f"Error getting job detail: {e}")
+    return locations  

@@ -12,7 +12,7 @@ class JobSearchParams(BaseModel):
     company_ids: Optional[List[str]] = None
     employment_types: Optional[List[int]] = None
     experience_levels: Optional[List[int]] = None
-    location: Optional[str] = None
+    locations: Optional[List[str]] = None
     is_remote: Optional[bool] = None
     sort_by: Optional[int] = JobSortBy.RELEVANCE
     min_annual_salary: Optional[float] = None

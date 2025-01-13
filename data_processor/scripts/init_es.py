@@ -65,7 +65,7 @@ def init_elasticsearch(batch_size=1000):
                         "name": job.company.name,
                         "icon_url": job.company.icon_url
                     },
-                    "location": job.location,
+                    "locations": job.analysis.locations.split(';') if job.analysis.locations else [],
                     "employment_type": job.employment_type,
                     "posted_date": format_date(job.posted_date),
                     "is_remote": job.is_remote,

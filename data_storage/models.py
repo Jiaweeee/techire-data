@@ -142,3 +142,8 @@ class JobAnalysis(Base):
     skill_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     experience_level: Mapped[Optional[ExperienceLevel]] = mapped_column(Integer, nullable=True)
     summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    locations: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        comment="Formatted locations string in 'City, State, Country' format, separated by semicolons"
+    )

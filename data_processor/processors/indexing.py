@@ -30,7 +30,7 @@ class DataIndexingProcessor(Processor):
                     "name": job.company.name,
                     "icon_url": job.company.icon_url
                 },
-                "location": job.location,
+                "location": analysis.locations,
                 "employment_type": job.employment_type,
                 "posted_date": self._format_date(job.posted_date),
                 "is_remote": job.is_remote,

@@ -68,8 +68,31 @@ class InfoExtractingProcessor(Processor):
                 ...                           // e.g., ["Python", "AWS", "React"]
             ],
             "experience_level": string,        // One of: "ENTRY", "MID", "SENIOR", "LEAD", "EXECUTIVE"
-            "summary": string                  // 2-3 concise sentences summarizing key responsibilities
+            "summary": string,                  // 2-3 concise sentences summarizing key responsibilities
+            "locations": [                     // List of formatted locations
+                {{
+                    "city": string,            // City name
+                    "state": string or null,   // State/Province (use abbreviations for US states)
+                    "country": string or null  // Country name (use full names, e.g., "United States")
+                }}
+            ]
         }}
+
+        LOCATION FORMATTING RULES:
+        1. For Singapore: just write "Singapore" in city field
+        2. For United States locations:
+        - Use standard state abbreviations (e.g., CA, NY, WA)
+        - Always use "United States" for country field
+        3. For remote locations:
+        - If location is "Remote" or similar, set city to null
+        - Include country if specified (e.g., "Remote, United States")
+        4. Country naming conventions:
+        - United States: "United States"
+        - United Kingdom: "United Kingdom"
+        - Use full country names, not abbreviations
+        5. When only city information is available: fill only city field
+        6. For well-known global cities: include full information when available
+        7. For multiple locations: create separate objects in the locations array
 
         IMPORTANT SALARY GUIDELINES:
         1. First, carefully search for EXPLICIT salary information in the job description:
@@ -112,27 +135,51 @@ class InfoExtractingProcessor(Processor):
                 response_format={"type": "json_object"},
             )
             # 解析响应
-            result = json.loads(response.choices[0].message.content)
-            logger.info(f"LLM analysis result: {result}")
-            level_str = result.get('experience_level')
-            period_str = result.get('salary_period')
+            llm_result = json.loads(response.choices[0].message.content)
+            level_str = llm_result.get('experience_level')
+            period_str = llm_result.get('salary_period')
             
             if level_str:
-                result['experience_level'] = ExperienceLevel[level_str.upper()]
+                llm_result['experience_level'] = ExperienceLevel[level_str.upper()]
             if period_str:
-                result['salary_period'] = SalaryPeriod[period_str.upper()]
+                llm_result['salary_period'] = SalaryPeriod[period_str.upper()]
+
+            # Clean up locations
+            locations = llm_result.get('locations', [])
+            cleaned_locations = []
+            for loc in locations:
+                # Handle remote locations
+                city = loc.get('city')
+                if city and isinstance(city, str) and city.lower() in ['remote', 'remotely']:
+                    loc['city'] = None
                 
-            return {
-                'salary_min': result.get('salary_min'),
-                'salary_max': result.get('salary_max'),
-                'salary_fixed': result.get('salary_fixed'),
-                'salary_currency': result.get('salary_currency'),
-                'salary_period': result.get('salary_period'),
-                'is_salary_estimated': result.get('is_salary_estimated', True),  # 默认为 True
-                'skill_tags': ', '.join(result.get('skill_tags', [])),
-                'experience_level': result.get('experience_level'),
-                'summary': result.get('summary')
+                # Standardize country names
+                country = loc.get('country', '')
+                if country:
+                    country = country.upper()
+                    if country in ['US', 'USA']:
+                        loc['country'] = 'United States'
+                    elif country == 'UK':
+                        loc['country'] = 'United Kingdom'
+                    # Add more country mappings as needed
+                
+                cleaned_locations.append(loc)
+            
+                
+            result = {
+                'salary_min': llm_result.get('salary_min'),
+                'salary_max': llm_result.get('salary_max'),
+                'salary_fixed': llm_result.get('salary_fixed'),
+                'salary_currency': llm_result.get('salary_currency'),
+                'salary_period': llm_result.get('salary_period'),
+                'is_salary_estimated': llm_result.get('is_salary_estimated', True),  # 默认为 True
+                'skill_tags': ', '.join(llm_result.get('skill_tags', [])),
+                'experience_level': llm_result.get('experience_level'),
+                'summary': llm_result.get('summary'),
+                'locations': cleaned_locations
             }
+            logger.info(f"LLM analysis result: {result}")
+            return result
         except Exception as e:
             logger.error(f"Error in LLM analysis: {str(e)}")
             return None

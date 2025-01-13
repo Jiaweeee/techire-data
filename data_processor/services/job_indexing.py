@@ -25,7 +25,7 @@ class JobIndexService:
         logger.info("Received shutdown signal, stopping gracefully...")
         self.should_continue = False
 
-    def run(self, interval: int = 300):
+    def run(self, interval: int = 10):
         logger.info("Job Index Service started")
         
         while self.should_continue:

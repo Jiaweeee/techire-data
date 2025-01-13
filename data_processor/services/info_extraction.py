@@ -5,7 +5,7 @@ import time
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy.orm import Session, joinedload
-from typing import List, Set
+from typing import List, Set, Dict, Optional
 from data_storage.config import create_db_engine
 from data_storage.models import Job, JobAnalysis
 from data_processor.processors import InfoExtractingProcessor
@@ -19,7 +19,7 @@ class InfoExtractionService:
         self.lock = threading.Lock()
         self.max_workers = max_workers
         self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
-        self.processor = InfoExtractingProcessor(llm_provider='moonshot')
+        self.processor = InfoExtractingProcessor(llm_provider='deepseek')
         
         # Register signal handlers
         signal.signal(signal.SIGINT, self._handle_shutdown)
@@ -66,6 +66,7 @@ class InfoExtractionService:
             session.query(Job)
             .options(joinedload(Job.company))
             .join(JobAnalysis)
+            .filter(Job.expired == False)
             .filter(JobAnalysis.status.in_(['pending', 'failed']))
             .limit(batch_size)
             .all()
@@ -119,8 +120,28 @@ class InfoExtractionService:
         analysis.skill_tags = result.get('skill_tags')
         analysis.experience_level = result.get('experience_level')
         analysis.summary = result.get('summary')
+        analysis.locations = self._format_locations(result.get('locations'))
         
         session.commit()
+
+    def _format_locations(self, locations: List[Dict[str, Optional[str]]]) -> str:
+        """
+        Convert list of location dictionaries to a semicolon-separated string.
+        
+        Args:
+            locations: List of location dictionaries with city, state, country fields
+            
+        Returns:
+            Semicolon-separated string of formatted locations
+        """
+        formatted_locations = []
+        
+        for loc in locations:
+            # Join non-empty parts with comma
+            parts = [part for part in [loc.get('city'), loc.get('state'), loc.get('country')] if part]
+            formatted_locations.append(', '.join(parts))
+        
+        return '; '.join(formatted_locations)
 
     def _handle_shutdown(self, signum, frame):
         """Handle termination signals"""

@@ -103,6 +103,9 @@ manage_es() {
 
 # Process arguments
 case "$1" in
+    "help")
+        print_usage
+        ;;
     "api")
         start_api
         ;;

@@ -77,24 +77,30 @@ export function SearchPage() {
 
   const handleRemoveTag = (tag: FilterTag) => {
     switch (tag.type) {
-      case 'company':
-        handleSearch({ 
-          company_ids: params.company_ids?.filter(id => id !== tag.value), 
-          page: 1
-        });
-        break;
-      case 'employment':
-        handleSearch({ 
-          employment_types: params.employment_types?.filter(type => type !== tag.value),
-          page: 1
-        });
-        break;
-      case 'experience':
-        handleSearch({ 
-          experience_levels: params.experience_levels?.filter(level => level !== tag.value),
-          page: 1
-        });
-        break;
+        case 'company':
+            handleSearch({ 
+                company_ids: params.company_ids?.filter(id => id !== tag.value), 
+                page: 1
+            });
+            break;
+        case 'employment':
+            handleSearch({ 
+                employment_types: params.employment_types?.filter(type => type !== tag.value),
+                page: 1
+            });
+            break;
+        case 'experience':
+            handleSearch({ 
+                experience_levels: params.experience_levels?.filter(level => level !== tag.value),
+                page: 1
+            });
+            break;
+        case 'location':
+            handleSearch({ 
+                locations: params.locations?.filter(location => location !== tag.value),
+                page: 1
+            });
+            break;
     }
   };
 

@@ -60,9 +60,9 @@ export interface SearchParams {
   employment_types?: number[];
   experience_levels?: number[];
   company_ids?: string[];
+  locations?: string[];
   sort_by?: number;
   is_remote?: boolean;
-  location?: string;
   min_annual_salary?: number;
   page?: number;
   per_page?: number;

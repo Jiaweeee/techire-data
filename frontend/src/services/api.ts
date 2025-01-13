@@ -19,9 +19,9 @@ export const searchJobs = async (params: SearchParams): Promise<SearchResponse> 
       employment_types: params.employment_types,
       experience_levels: params.experience_levels,
       company_ids: params.company_ids,
+      locations: params.locations,
       sort_by: params.sort_by,
       is_remote: params.is_remote,
-      location: params.location,
       min_annual_salary: params.min_annual_salary,
       page: params.page || 1,
       per_page: params.per_page || 10,
@@ -72,3 +72,9 @@ export const getStats = async (): Promise<StatsResponse> => {
   
   return response.json();
 }
+
+export async function getLocations(): Promise<string[]> {
+    const response = await fetch(`${API_BASE_URL}/jobs/locations`);
+    if (!response.ok) throw new Error('Failed to fetch locations');
+    return response.json();
+  }

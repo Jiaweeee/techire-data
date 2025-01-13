@@ -3,7 +3,11 @@ import { Search } from 'lucide-react';
 import { SearchParams, CompanyBrief } from '../types/api';
 import { getEmploymentTypeLabel } from '../types/employment';
 import { getExperienceLevelLabel } from '../types/experience';
-import { searchCompanies, getCompanies } from '../services/api';
+import { 
+    searchCompanies,
+    getCompanies,
+    getLocations
+} from '../services/api';
 import { useDebounce } from '../hooks/useDebounce';
 import { SalarySlider } from './SalarySlider';
 
@@ -12,7 +16,7 @@ export interface FilterTag {
     label: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any;
-    type: 'company' | 'employment' | 'experience';
+    type: 'company' | 'employment' | 'experience' | 'location';
 }
 
 interface FiltersProps {
@@ -29,6 +33,11 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
   const [isCompanyListOpen, setIsCompanyListOpen] = useState(false);
   const debouncedSearch = useDebounce(companySearch, 300);
   const companyDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [locationSearch, setLocationSearch] = useState('');
+  const [locations, setLocations] = useState<string[]>([]);
+  const [isLocationListOpen, setIsLocationListOpen] = useState(false);
+  const locationDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -78,16 +87,40 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
         label: getExperienceLevelLabel(level),
         value: level,
         type: 'experience' as const
+      })) || []),
+      // Location tags
+      ...(params.locations?.map(location => ({
+        id: `location-${location}`,
+        label: location,
+        value: location,
+        type: 'location' as const
       })) || [])
     ];
     
     onTagsChange(tags);
   }, [params, companies, onTagsChange]);
 
+  // Add new useEffect for fetching locations
+  useEffect(() => {
+    async function fetchLocations() {
+      try {
+        const data = await getLocations();
+        setLocations(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error('Failed to fetch locations:', error);
+        setLocations([]);
+      }
+    }
+    fetchLocations();
+  }, []);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (companyDropdownRef.current && !companyDropdownRef.current.contains(event.target as Node)) {
         setIsCompanyListOpen(false);
+      }
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target as Node)) {
+        setIsLocationListOpen(false);
       }
     }
 
@@ -96,6 +129,11 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Add filtered locations
+  const filteredLocations = locations.filter(location =>
+    location.toLowerCase().includes(locationSearch.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -143,6 +181,45 @@ export function Filters({ params, onFilterChange, onTagsChange }: FiltersProps) 
                       }}
                     />
                     <span className="text-sm text-gray-700">{company.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Location Filter */}
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
+        <div className="space-y-2">
+          <div className="relative" ref={locationDropdownRef}>
+            <input
+              type="text"
+              value={locationSearch}
+              onChange={(e) => setLocationSearch(e.target.value)}
+              onFocus={() => setIsLocationListOpen(true)}
+              placeholder="Search locations..."
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+            />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            
+            {/* Location List Dropdown */}
+            {isLocationListOpen && filteredLocations.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {filteredLocations.map(location => (
+                  <div
+                    key={location}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-700"
+                    onClick={() => {
+                      if (!params.locations?.includes(location)) {
+                        const newLocations = [...(params.locations || []), location];
+                        onFilterChange({ locations: newLocations });
+                      }
+                      setIsLocationListOpen(false);
+                    }}
+                  >
+                    {location}
                   </div>
                 ))}
               </div>

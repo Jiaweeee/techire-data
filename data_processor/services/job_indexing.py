@@ -78,6 +78,7 @@ class JobIndexService:
                 joinedload(Job.analysis)
             )
             .join(JobAnalysis)
+            .filter(Job.expired == False)
             .filter(JobAnalysis.status == 'processed')
             .limit(self.batch_size)
             .all()

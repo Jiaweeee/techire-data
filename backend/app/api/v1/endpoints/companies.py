@@ -30,14 +30,14 @@ async def get_company_detail(
         raise HTTPException(status_code=404, detail="Company not found")
     return company
 
-@router.get("/search", response_model=List[CompanyBrief])
-async def search_companies(
-    q: str = Query(..., description="搜索关键词"),
-    limit: Optional[int] = Query(10, description="返回结果数量限制", ge=1, le=50)
-):
-    """
-    搜索公司
-    """
-    crud = CompanyCRUD()
-    companies = crud.search(name=q, limit=limit)
-    return companies 
+# @router.get("/search", response_model=List[CompanyBrief])
+# async def search_companies(
+#     q: str = Query(..., description="搜索关键词"),
+#     limit: Optional[int] = Query(10, description="返回结果数量限制", ge=1, le=50)
+# ):
+#     """
+#     搜索公司
+#     """
+#     crud = CompanyCRUD()
+#     companies = crud.search(name=q, limit=limit)
+#     return companies 

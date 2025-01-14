@@ -45,15 +45,15 @@ export const getJobDetail = async (jobId: string): Promise<JobDetail> => {
   return response.json();
 }
 
-export const searchCompanies = async (query: string): Promise<CompanyBrief[]> => {
-  const response = await fetch(`${API_BASE_URL}/companies/search?q=${encodeURIComponent(query)}`);
+// export const searchCompanies = async (query: string): Promise<CompanyBrief[]> => {
+//   const response = await fetch(`${API_BASE_URL}/companies/search?q=${encodeURIComponent(query)}`);
   
-  if (!response.ok) {
-    throw new Error('Failed to fetch companies');
-  }
+//   if (!response.ok) {
+//     throw new Error('Failed to fetch companies');
+//   }
   
-  return response.json();
-}
+//   return response.json();
+// }
 
 export async function getCompanies(): Promise<CompanyBrief[]> {
   const response = await fetch(`${API_BASE_URL}/companies/list`);

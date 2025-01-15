@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
 import { JobList } from './JobList';
@@ -6,7 +6,7 @@ import { Filters, FilterTag } from './Filters';
 import { JobBrief, SearchParams } from '../types/api';
 import { searchJobs } from '../services/api';
 import { JobSortBy } from '../types/job';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, MessageCircle, HelpCircle } from 'lucide-react';
 import { Logo } from './Logo';
 import { Head } from './Head';
 
@@ -22,6 +22,8 @@ export function SearchPage() {
     q: searchParams.get('q') || undefined
   });
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const feedbackBtnRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = useCallback(async (newParams: Partial<SearchParams>) => {
     setIsLoading(true);
@@ -54,6 +56,20 @@ export function SearchPage() {
     if (query) {
       handleSearch({ q: query, page: 1 });
     }
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        feedbackBtnRef.current &&
+        !feedbackBtnRef.current.contains(event.target as Node)
+      ) {
+        setShowFeedback(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLoadMore = () => {
@@ -206,6 +222,35 @@ export function SearchPage() {
               />
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Feedback Button */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <div className="relative">
+          <button
+            onClick={() => setShowFeedback(!showFeedback)}
+            className="w-10 h-10 rounded-full bg-white text-gray-500 flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+          
+          {showFeedback && (
+            <div className="absolute bottom-14 right-0 bg-white rounded-lg shadow-lg p-2 w-36">
+              <div ref={feedbackBtnRef} className="flex items-center justify-center hover:bg-gray-100 w-full">
+                <MessageCircle className="w-5 h-5 text-gray-500" />
+                <button
+                  onClick={() => {
+                    setShowFeedback(false);
+                    window.open('https://realtechjobs.featurebase.app/', '_blank');
+                  }}
+                  className="text-center text-gray-500 px-2 py-1 rounded"
+                >
+                  Feedback
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

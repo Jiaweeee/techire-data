@@ -51,31 +51,37 @@ Once started, access the database viewer at `http://localhost:4983` in your brow
 Use the `local_dev.sh` script to start individual services. Open a separate terminal for each service you want to run:
 
 ```bash
-# Start the Job Search API service
+# Start the Backend API service
 ./local_dev.sh api
 
 # Start the Frontend application
 ./local_dev.sh ui
 
 # Start the Database viewer
-./local_dev.sh db
+./local_dev.sh db:view
+
+# Apply existing database migrations
+./local_dev.sh db:migrate
+
+# Generate a new database migration with a message
+./local_dev.sh db:migrate "Add user table"
 
 # Start the job data crawler
 ./local_dev.sh crawl
 
-# Start the data processing service
-./local_dev.sh process
+# Start the data processing service for extraction
+./local_dev.sh process extract
 
-# Run database migrations
-./local_dev.sh migrate
-
-# Generate a new migration with a message
-./local_dev.sh migrate "Add user table"
+# Start the data processing service for indexing
+./local_dev.sh process index
 
 # Elasticsearch operations
 ./local_dev.sh es init    # Initialize Elasticsearch index
 ./local_dev.sh es update  # Update index mapping
 ./local_dev.sh es delete  # Delete index
+
+# Run data ingestion script
+./local_dev.sh ingest
 ```
 
 Make the script executable if needed:
